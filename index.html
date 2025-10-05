@@ -36,21 +36,27 @@
         body.dark-mode .link-category { background: #5568d3; color: #e0e0e0; }
         body.dark-mode .link-notes { background: #3c4a63; border-color: #5568d3; color: #e0e0e0; }
         body.dark-mode .empty-state h3, body.dark-mode .empty-state p { color: #999; }
-        body.dark-mode .move-modal-content, body.dark-mode .category-modal-content, body.dark-mode .edit-modal-content { background: #2f3b52; }
-        body.dark-mode .move-modal h3, body.dark-mode .category-modal-content h3, body.dark-mode .edit-modal-content h3 { color: #9ab4f3; }
+        body.dark-mode .move-modal-content { background: #2f3b52; }
+        body.dark-mode .move-modal h3 { color: #9ab4f3; }
         body.dark-mode .toolbar { background: #2f3b52; border-color: #3c4a63; }
         body.dark-mode .toolbar label { color: #ccc; }
         body.dark-mode .utility-box { background: #2f3b52; border-color: #3c4a63; }
         body.dark-mode .utility-box h2 { color: #9ab4f3; }
         body.dark-mode .utility-box p { color: #aaa; }
-        body.dark-mode .icon-btn { color: #ccc; } 
+        body.dark-mode .icon-btn { color: #ccc; } /* Default icon color for dark mode */
         body.dark-mode .edit-btn { color: #2ecc71; }
         body.dark-mode .favorite-btn { color: #ffd700; }
         body.dark-mode .move-btn { color: #9ab4f3; }
         body.dark-mode .delete-btn { color: #ff4757; }
-        body.dark-mode .category-item { background: #3c4a63; border-color: #5568d3; }
+        body.dark-mode .link-category .icon-btn { color: #e0e0e0; }
+        body.dark-mode .title-input, body.dark-mode .description-input, body.dark-mode .category-select-inline {
+            background: #3c4a63; border-color: #9ab4f3; color: #9ab4f3;
+        }
+        body.dark-mode .description-input { color: #e0e0e0; }
+        body.dark-mode .category-select-inline { color: #e0e0e0; }
 
-        /* General Styling */
+
+        /* General Styling (unchanged from previous version unless noted) */
         .add-link-form { background: #f8f9ff; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #667eea; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #333; font-weight: 600; }
@@ -70,31 +76,69 @@
         /* Link Items */
         .link-item { 
             background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #e0e0e0; transition: all 0.3s; position: relative; 
-            cursor: grab;
+            cursor: grab; /* Indica que o item é arrastável */
         }
-        
+        .link-item:active { cursor: grabbing; }
+        .link-item:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .link-item.favorite { border-color: #ffd700; background: #fffdf0; }
+        .link-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; flex-wrap: wrap; }
+        .link-title { color: #667eea; font-size: 1.3em; font-weight: 700; text-decoration: none; flex: 1; word-break: break-word; display: flex; align-items: center; }
+        .link-title:hover { text-decoration: underline; }
+        .link-url { color: #999; font-size: 0.9em; word-break: break-all; margin-bottom: 10px; }
+        .link-category { background: #ecf0f1; color: #34495e; padding: 3px 8px; border-radius: 5px; font-size: 0.8em; font-weight: 600; margin-left: 10px; display: inline-flex; align-items: center; gap: 5px;}
+        .link-category .icon-btn { font-size: 14px; padding: 0; margin-left: 5px; color: #34495e; }
+
+        /* NEW: Edit-in-place styles */
+        .title-input, .description-input, .category-select-inline {
+            width: calc(100% - 30px); /* Adjust for actions */
+            padding: 8px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #667eea;
+            background: white;
+            margin-bottom: 10px;
+        }
+        .description-input {
+            font-size: 1em;
+            font-weight: normal;
+            color: #333;
+            min-height: 60px;
+        }
+        .category-select-inline {
+            font-size: 1em;
+            font-weight: 600;
+            color: #34495e;
+            width: auto; /* Adjust to content */
+            min-width: 150px;
+            margin-bottom: 10px;
+        }
+
+
         /* Actions and Modal */
         .link-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: auto; }
         .icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; transition: transform 0.2s; color: #666; }
         .icon-btn:hover { transform: scale(1.2); }
+        .favorite-btn { color: #ffd700; }
+        .move-btn { color: #667eea; }
+        .delete-btn { color: #ff4757; }
         
-        /* Modal Base Style */
-        .move-modal, .category-modal, .edit-link-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-        .move-modal.active, .category-modal.active, .edit-link-modal.active { display: flex; }
-        .move-modal-content, .category-modal-content, .edit-modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .move-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .move-modal.active { display: flex; }
+        .move-modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
 
-        /* CATEGORY MANAGEMENT STYLES */
-        .category-management { margin-top: 20px; }
-        .category-list { max-height: 300px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; }
-        .category-item { 
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; 
-            border: 1px solid #ddd; border-radius: 8px; margin-bottom: 8px; background: #f9f9f9;
+        /* NEW: Toolbar & Utility */
+        .toolbar { 
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; 
+            margin-bottom: 20px; padding: 15px; border-radius: 10px; background: #f0f4ff; border: 1px solid #ddd;
         }
-        .category-item input[type="text"] {
-            flex: 1; margin-right: 10px; padding: 5px; border: 1px solid #ccc; font-weight: 600;
-        }
+        .toolbar-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .toolbar label { margin: 0; font-weight: 700; color: #333; }
+        .utility-box { background: #ecf0f1; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #bdc3c7; }
+        #linksList { min-height: 50px; } /* Ensures space for Drag and Drop */
 
-        /* Dark Mode Toggle */
+        /* NEW: Dark Mode Toggle */
         .dark-mode-toggle {
             position: fixed;
             top: 20px;
@@ -113,11 +157,54 @@
             align-items: center;
             justify-content: center;
         }
+        .dark-mode-toggle:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+        body.dark-mode .dark-mode-toggle {
+            background: #9ab4f3;
+            color: #222a3d;
+        }
+        body.dark-mode .dark-mode-toggle:hover {
+            background: #7c9ded;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            margin-top: 30px;
+            color: #999;
+        }
+        .empty-state svg {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .empty-state h3 {
+            font-size: 1.5em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .empty-state p {
+            font-size: 1em;
+            color: #999;
+        }
+        body.dark-mode .empty-state {
+            border-color: #3c4a63;
+        }
+
 
         /* Responsiveness */
         @media (max-width: 600px) {
             .container { padding: 20px; }
+            h1 { font-size: 1.8em; }
+            .link-header { flex-direction: column; align-items: stretch; }
             .link-actions { margin-top: 10px; justify-content: flex-end; }
+            .link-title { flex-direction: column; align-items: flex-start; }
+            .link-category { margin-left: 0; margin-top: 5px; }
             .toolbar { flex-direction: column; align-items: stretch; }
             .toolbar-group { flex-direction: column; align-items: stretch; gap: 5px; }
             .toolbar .btn { width: 100%; }
@@ -132,20 +219,20 @@
         <h1>📚 Gerenciador de Links ULTRA</h1>
 
         <div class="utility-box">
-            <h2 style="margin-bottom: 15px;">🛠️ Ferramentas</h2>
+            <h2 style="margin-bottom: 15px;">💾 Backup de Dados</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
                 <button class="btn btn-primary" onclick="exportLinks()">Exportar (Download JSON)</button>
                 <input type="file" id="importFile" accept=".json" style="width: auto; flex-grow: 1; padding: 5px;" onchange="importLinks()">
                 <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Importar (Upload JSON)</button>
             </div>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Use o backup para salvar e restaurar seus links. Clique em **Gerenciar Categorias** abaixo para organizar seus dados.</p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Use o backup para salvar e restaurar seus links em outro dispositivo.</p>
         </div>
         
         <div class="add-link-form">
             <h2 style="margin-bottom: 20px;">➕ Adicionar Novo Link</h2>
             <div class="form-group">
                 <label for="linkUrl">URL do Link:</label>
-                <input type="text" id="linkUrl" placeholder="https://exemplo.com ou apenas exemplo.com" required>
+                <input type="url" id="linkUrl" placeholder="https://exemplo.com" required>
             </div>
             <div class="form-group">
                 <label for="linkTitle">Título:</label>
@@ -153,7 +240,14 @@
             </div>
             <div class="form-group">
                 <label for="linkCategory">Categoria:</label>
-                <select id="linkCategory"></select>
+                <select id="linkCategory">
+                    <option value="Sem Categoria">Sem Categoria</option>
+                    <option value="Desenvolvimento">Desenvolvimento</option>
+                    <option value="Finanças">Finanças</option>
+                    <option value="Utilidades">Utilidades</option>
+                    <option value="Pessoal">Pessoal</option>
+                    <option value="Outros">Outros</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="linkDescription">Descrição:</label>
@@ -173,11 +267,12 @@
             <div class="toolbar">
                 <div class="toolbar-group">
                     <label for="filterCategory">Filtrar por Categoria:</label>
-                    <select id="filterCategory" onchange="renderLinks()"></select>
+                    <select id="filterCategory" onchange="renderLinks()">
+                        <option value="all">Todas as Categorias</option>
+                        </select>
                 </div>
                 
                 <div class="toolbar-group">
-                    <button class="btn btn-secondary" onclick="openCategoryModal()">⚙️ Gerenciar Categorias</button>
                     <button class="btn btn-secondary" onclick="sortLinks('favorite')">⭐ Favoritos no Topo</button>
                     <button class="btn btn-secondary" onclick="sortLinks('title')">A-Z / Z-A</button>
                 </div>
@@ -189,133 +284,85 @@
     <div class="move-modal" id="moveModal">
         <div class="move-modal-content">
             <h3>Mover Link</h3>
-            <div class="move-options">
+            <div class="move-options" style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button class="btn btn-primary" onclick="moveToPosition('first')">⬆️ Mover para Primeira</button>
                 <button class="btn btn-primary" onclick="moveToPosition('last')">⬇️ Mover para Última</button>
             </div>
             
-            <div class="position-input-group">
+            <div class="position-input-group" style="margin-bottom: 20px;">
                 <label for="targetPosition">Mover para a linha (1 - <span id="maxPosition">1</span>):</label>
-                <input type="number" id="targetPosition" placeholder="Ex: 5" min="1">
-                <button class="btn btn-primary" style="margin-top: 10px;" onclick="moveLinkToSpecificPosition()">Mover para Posição</button>
+                <input type="number" id="targetPosition" placeholder="Ex: 5" min="1" style="width: 100%; margin-top: 5px;">
+                <button class="btn btn-primary" style="margin-top: 10px; width: 100%;" onclick="moveLinkToSpecificPosition()">Mover para Posição</button>
             </div>
 
-            <button class="btn" style="background: #95a5a6; color: white; margin-top: 20px;" onclick="closeMoveModal()">Cancelar</button>
+            <button class="btn" style="background: #95a5a6; color: white; width: 100%;" onclick="closeMoveModal()">Cancelar</button>
         </div>
     </div>
-
-    <div class="category-modal" id="categoryModal">
-        <div class="category-modal-content">
-            <h3>⚙️ Gerenciar Categorias</h3>
-            
-            <div class="category-add" style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="newCategoryName" placeholder="Novo nome de categoria" style="flex: 1;">
-                <button class="btn btn-primary" onclick="addCategory()">Adicionar</button>
-            </div>
-
-            <div class="category-management">
-                <h4>Categorias Atuais:</h4>
-                <div class="category-list" id="categoryList">
-                    </div>
-                <p style="font-size: 0.8em; color: #7f8c8d;">**Nota:** "Sem Categoria" não pode ser alterada ou excluída.</p>
-            </div>
-
-            <button class="btn" style="background: #95a5a6; color: white; margin-top: 20px;" onclick="closeCategoryModal()">Fechar</button>
-        </div>
-    </div>
-
-    <div class="edit-link-modal" id="editLinkModal">
-        <div class="edit-modal-content">
-            <h3>✍️ Editar Link</h3>
-            <input type="hidden" id="editLinkIndex">
-            
-            <div class="form-group">
-                <label for="editLinkUrl">URL do Link:</label>
-                <input type="text" id="editLinkUrl" required>
-            </div>
-            <div class="form-group">
-                <label for="editLinkTitle">Título:</label>
-                <input type="text" id="editLinkTitle" required>
-            </div>
-            <div class="form-group">
-                <label for="editLinkCategory">Categoria:</label>
-                <select id="editLinkCategory"></select>
-            </div>
-            <div class="form-group">
-                <label for="editLinkDescription">Descrição:</label>
-                <textarea id="editLinkDescription"></textarea>
-            </div>
-
-            <button class="btn btn-primary" onclick="saveEditedLink()">Salvar Alterações</button>
-            <button class="btn" style="background: #95a5a6; color: white; margin-top: 10px;" onclick="closeEditModal()">Cancelar</button>
-        </div>
-    </div>
-
 
     <script>
-        // --- Dados Iniciais (Apenas para primeira carga) ---
         const initialLinks = [
             { url: 'https://asl43.github.io/repositorio-/', title: 'REPOSITORIO DE LINKS', description: 'Link do próprio Gerenciador de Links.', notes: '', favorite: true, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/rifa_solidaria', title: 'Rifa Solidária – Castração de Cães e Gatos', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/Futebol', title: 'Futebol', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/Alarme', title: 'Alarme', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/Sv_diario', title: 'SV Diário', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/rifa_solidaria/', title: 'Rifa Solidária – Castração de Cães e Gatos', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/Futebol/', title: 'Futebol', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/Alarme/', title: 'Alarme', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Sv_diario/', title: 'SV Diário', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/Registro_SV', title: 'Registro SV', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Link_utilidades', title: 'Link Utilidades', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Futebol1', title: 'Futebol 1', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/Link_utilidades/', title: 'Link Utilidades', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/Futebol1/', title: 'Futebol 1', description: '', notes: '', favorite: false, category: 'Outros' },
             { url: 'https://github.com/asl43/SV_relatorio', title: 'SV Relatório', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Conversortextoavancado', title: 'Conversor Texto Avançado', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Conversortextoavancado/', title: 'Conversor Texto Avançado', description: '', notes: '', favorite: false, category: 'Utilidades' },
             { url: 'https://github.com/asl43/SistemacontroleVTR', title: 'Sistema Controle VTR', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Monitor-investimento-', title: 'Monitor Investimento', description: '', notes: '', favorite: false, category: 'Finanças' },
-            { url: 'https://github.com/asl43/Gerenciador-arquivo-', title: 'Gerenciador Arquivo', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/System-de-estudos-', title: 'System de Estudos', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/rifa_beneficente', title: 'Rifa Beneficente', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/Monitor-investimento-/', title: 'Monitor Investimento', description: '', notes: '', favorite: false, category: 'Finanças' },
+            { url: 'https://asl43.github.io/Gerenciador-arquivo-/', title: 'Gerenciador Arquivo', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/System-de-estudos-/', title: 'System de Estudos', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/rifa_beneficente/', title: 'Rifa Beneficente', description: '', notes: '', favorite: false, category: 'Pessoal' },
             { url: 'https://github.com/asl43/Bin', title: 'Bin', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/Audio', title: 'Audio', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/Bing', title: 'Bing', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/Encurto', title: 'Encurtador', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/Audio/', title: 'Audio', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Bing/', title: 'Bing', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/Encurto/', title: 'Encurtador', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/Sudoku', title: 'Sudoku', description: '', notes: '', favorite: false, category: 'Outros' },
             { url: 'https://github.com/asl43/Gest', title: 'Gest', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/Gest-or', title: 'Gestor', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/Click', title: 'Click', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Energia-consumo', title: 'Energia Consumo', description: '', notes: '', favorite: false, category: 'Finanças' },
-            { url: 'https://github.com/asl43/Gest-sv', title: 'Gest SV', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/aguaia', title: 'Aguaia', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/Financy', title: 'Financy', description: '', notes: '', favorite: false, category: 'Finanças' },
-            { url: 'https://github.com/asl43/Pet', title: 'Pet', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/Gps', title: 'GPS', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/CONVERTMP3', title: 'Converter MP3', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/Creacao-vd', title: 'Criação VD', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/Anota-es', title: 'Anotações', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/Calend-rio-e-LEMBRETES-', title: 'Calendário e Lembretes', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/mp43', title: 'MP4', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/Edi-o-foto', title: 'Edição Foto', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/Recicl', title: 'Reciclagem', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/Compara', title: 'Comparador', description: '', notes: '', favorite: false, category: 'Utilidades' },
-            { url: 'https://github.com/asl43/Autoagendar', title: 'Auto Agendar', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Imgdesenh', title: 'Img Desenho', description: '', notes: '', favorite: false, category: 'Outros' },
-            { url: 'https://github.com/asl43/BLOCO', title: 'Bloco', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/Energia-consumo/', title: 'Energia Consumo', description: '', notes: '', favorite: false, category: 'Finanças' },
+            { url: 'https://asl43.github.io/Gest-sv/', title: 'Gest SV', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/aguaia/', title: 'Aguaia', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/Financy/', title: 'Financy', description: '', notes: '', favorite: false, category: 'Finanças' },
+            { url: 'https://asl43.github.io/Pet/', title: 'Pet', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/Gps/', title: 'GPS', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/CONVERTMP3/', title: 'Converter MP3', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Creacao-vd/', title: 'Criação VD', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Anota-es/', title: 'Anotações', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/Calend-rio-e-LEMBRETES-/', title: 'Calendário e Lembretes', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/mp43/', title: 'MP4', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/Edi-o-foto/', title: 'Edição Foto', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Recicl/', title: 'Reciclagem', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/Compara/', title: 'Comparador', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://asl43.github.io/Autoagendar/', title: 'Auto Agendar', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/Imgdesenh/', title: 'Img Desenho', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://asl43.github.io/BLOCO/', title: 'Bloco', description: '', notes: '', favorite: false, category: 'Pessoal' },
             { url: 'https://github.com/asl43/ANALIZADOR', title: 'Analisador', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/Analy-tel', title: 'Analy Tel', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Chtbot', title: 'Chatbot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Chat-pwa', title: 'Chat PWA', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Botcht', title: 'Bot Chat', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Integracbot', title: 'Integração Bot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            // Chtbot mapeado para o link do Chat-pwa, conforme instrução
+            { url: 'https://asl43.github.io/Chat-pwa/', title: 'Chatbot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' }, 
+            { url: 'https://asl43.github.io/Chat-pwa/', title: 'Chat PWA', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/Botcht/', title: 'Bot Chat', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/Integracbot/', title: 'Integração Bot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/gest-sv2', title: 'Gest SV 2', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/gest-sv3', title: 'Gest SV 3', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/gest-sv4', title: 'Gest SV 4', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/contrutor-de-chatbot-', title: 'Construtor de Chatbot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/Chat_Interno', title: 'Chat Interno', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
-            { url: 'https://github.com/asl43/SMART-AGENDA', title: 'Smart Agenda', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/SMART-AGENDA-SIMILAR', title: 'Smart Agenda Similar', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/Agend', title: 'Agenda', description: '', notes: '', favorite: false, category: 'Pessoal' },
-            { url: 'https://github.com/asl43/empenho-de-J', title: 'Empenho de J', description: '', notes: '', favorite: false, category: 'Finanças' }
+            { url: 'https://asl43.github.io/contrutor-de-chatbot-/', title: 'Construtor de Chatbot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/Chat_Interno/', title: 'Chat Interno', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://asl43.github.io/SMART-AGENDA/', title: 'Smart Agenda', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/SMART-AGENDA-SIMILAR/', title: 'Smart Agenda Similar', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/Agend/', title: 'Agenda', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://asl43.github.io/EMPENHO-DO-J/', title: 'Empenho de J', description: '', notes: '', favorite: false, category: 'Finanças' }
         ];
 
         // --- Variáveis Globais ---
         let links = loadLinks(); 
         let currentMoveIndex = null;
-        let sortDirection = 1; 
+        let sortDirection = 1; // 1 for A-Z/Asc, -1 for Z-A/Desc
         
         // --- FUNÇÕES DE DARK MODE ---
         function toggleDarkMode() {
@@ -354,11 +401,13 @@
                     return parsedLinks.map(link => ({ 
                         ...link, 
                         category: link.category || 'Sem Categoria',
-                        editingTitle: false,
+                        // Garante que as flags de edição estejam em estado inicial
+                        editingTitle: false, 
                         editingDescription: false,
                         editingCategory: false
                     }));
                 }
+                // Retorna os links iniciais se não houver nada salvo
                 return initialLinks.map(link => ({ 
                     ...link, 
                     category: link.category || 'Sem Categoria',
@@ -368,574 +417,26 @@
                 }));
             } catch (e) {
                 console.error("Erro ao carregar links do localStorage:", e);
+                // Se o localStorage estiver corrompido, volta para o array inicial
                 return initialLinks;
             }
         }
 
         function saveLinks() {
             try {
+                // Ao salvar, remove as flags de edição para não persistir no armazenamento
                 const linksToSave = links.map(link => {
-                    // Remove flags de edição antes de salvar
                     const { editingTitle, editingDescription, editingCategory, ...rest } = link;
                     return rest;
                 });
                 localStorage.setItem('myLinkManagerLinks', JSON.stringify(linksToSave));
-                updatePageTitleCount(); 
             } catch (e) {
                 console.error("Erro ao salvar links no localStorage:", e);
+                alert("Aviso: Falha ao salvar os links. Seu armazenamento local pode estar cheio ou inacessível.");
             }
         }
 
-        // --- FUNÇÃO DE CONTAGEM NO TÍTULO DA PÁGINA ---
-        function updatePageTitleCount() {
-            const totalCount = links.length;
-            document.title = `Gerenciador de Links ULTRA (${totalCount})`;
-        }
-
-
-        // --- FUNÇÕES DE CATEGORIAS ---
-        function getUniqueCategories() {
-            const categories = links.map(link => link.category).filter(Boolean);
-            const uniqueCategories = [...new Set(categories)];
-            
-            const defaultCategory = 'Sem Categoria';
-            const sorted = uniqueCategories
-                .filter(cat => cat !== defaultCategory)
-                .sort((a, b) => a.localeCompare(b));
-
-            return [defaultCategory, ...sorted];
-        }
-
-        function getUniqueCategoriesWithCount() {
-            const categoryCounts = {};
-            links.forEach(link => {
-                const category = link.category || 'Sem Categoria';
-                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-            });
-            
-            const uniqueCategories = getUniqueCategories(); 
-            
-            return uniqueCategories.map(category => ({
-                name: category,
-                count: categoryCounts[category] || 0
-            }));
-        }
-
-        function populateCategorySelects(targetSelectId = null, selectedCategory = null) {
-            const uniqueCategories = getUniqueCategories();
-            const addSelect = document.getElementById('linkCategory');
-            const filterSelect = document.getElementById('filterCategory');
-            
-            // Popula o select de Adição
-            addSelect.innerHTML = uniqueCategories.map(cat => 
-                `<option value="${cat}">${cat}</option>`
-            ).join('');
-            
-            // Popula o select de Edição (se estiver ativo)
-            if (targetSelectId === 'editLinkCategory') {
-                const editSelect = document.getElementById(targetSelectId);
-                editSelect.innerHTML = uniqueCategories.map(cat => 
-                    `<option value="${cat}" ${cat === selectedCategory ? 'selected' : ''}>${cat}</option>`
-                ).join('');
-            }
-            
-            // Popula o select de Filtro (com contagem)
-            const categoriesWithCount = getUniqueCategoriesWithCount();
-            const currentFilter = filterSelect.value;
-
-            filterSelect.innerHTML = `<option value="all">Todas as Categorias (${links.length})</option>`;
-            
-            categoriesWithCount.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.name;
-                option.textContent = `${cat.name} (${cat.count})`;
-                if (cat.name === currentFilter) {
-                    option.selected = true;
-                }
-                if (cat.name !== 'Sem Categoria') {
-                    filterSelect.appendChild(option);
-                }
-            });
-        }
-        
-        // --- GERENCIAMENTO DE CATEGORIAS (MODAL) ---
-        
-        function openCategoryModal() {
-            document.getElementById('categoryModal').classList.add('active');
-            renderCategoryList();
-        }
-
-        function closeCategoryModal() {
-            document.getElementById('categoryModal').classList.remove('active');
-            renderLinks(); 
-        }
-
-        function renderCategoryList() {
-            const categoryList = document.getElementById('categoryList');
-            const categoriesWithCount = getUniqueCategoriesWithCount().filter(cat => cat.name !== 'Sem Categoria');
-            
-            categoryList.innerHTML = categoriesWithCount.map(cat => {
-                return `
-                    <div class="category-item" data-category="${cat.name}">
-                        <span id="categoryName-${cat.name.replace(/\s/g, '_')}">${cat.name} (${cat.count} links)</span>
-                        <input type="text" id="editInput-${cat.name.replace(/\s/g, '_')}" value="${cat.name}" style="display: none;">
-                        <div class="category-actions">
-                            <button class="icon-btn" onclick="toggleEditCategoryName('${cat.name}')" title="Renomear">✏️</button>
-                            <button class="icon-btn delete-btn" onclick="deleteCategory('${cat.name}')" title="Excluir">🗑️</button>
-                        </div>
-                    </div>
-                `;
-            }).join('') || '<p style="text-align: center; color: #999;">Nenhuma categoria personalizada.</p>';
-        }
-
-        function addCategory() {
-            const newName = document.getElementById('newCategoryName').value.trim();
-            if (!newName) {
-                alert("Por favor, insira um nome para a nova categoria.");
-                return;
-            }
-            // Verifica se a categoria já existe (case-insensitive)
-            if (getUniqueCategories().map(c => c.toLowerCase()).includes(newName.toLowerCase())) {
-                alert("Essa categoria já existe!");
-                return;
-            }
-
-            // Para garantir que a nova categoria apareça nos selects,
-            // forçamos o re-render dos selects e fechamos o modal.
-            // O usuário pode então usá-la.
-            
-            // No caso de não ter nenhum link, ele não irá aparecer.
-            // Vamos apenas forçar a atualização dos selects:
-            
-            // Atualiza o DOM e fecha o modal. O usuário adicionará o primeiro link
-            // com a nova categoria no formulário.
-            document.getElementById('newCategoryName').value = '';
-            populateCategorySelects();
-            alert(`Categoria "${newName}" pode ser usada agora! Adicione o primeiro link com essa categoria.`);
-            closeCategoryModal(); 
-        }
-
-        function toggleEditCategoryName(oldName) {
-            // ... (Funções de renomear e excluir categoria permanecem iguais,
-            // apenas garantindo que chamam renderLinks() no final)
-            const safeOldName = oldName.replace(/\s/g, '_');
-            const span = document.getElementById(`categoryName-${safeOldName}`);
-            const input = document.getElementById(`editInput-${safeOldName}`);
-            
-            if (span.style.display !== 'none') {
-                span.style.display = 'none';
-                input.style.display = 'inline-block';
-                input.focus();
-                input.onblur = () => saveCategoryName(oldName, input.value.trim());
-                input.onkeypress = (e) => {
-                    if (e.key === 'Enter') saveCategoryName(oldName, input.value.trim());
-                };
-            } else {
-                saveCategoryName(oldName, input.value.trim());
-            }
-        }
-
-        function saveCategoryName(oldName, newName) {
-            const safeOldName = oldName.replace(/\s/g, '_');
-            const span = document.getElementById(`categoryName-${safeOldName}`);
-            const input = document.getElementById(`editInput-${safeOldName}`);
-            
-            if (!newName || newName === oldName) {
-                span.style.display = 'inline-block';
-                input.style.display = 'none';
-                renderCategoryList();
-                return;
-            }
-            
-            if (getUniqueCategories().map(c => c.toLowerCase()).includes(newName.toLowerCase())) {
-                alert("Essa categoria já existe!");
-                renderCategoryList();
-                return;
-            }
-
-            links.forEach(link => {
-                if (link.category === oldName) {
-                    link.category = newName;
-                }
-            });
-
-            saveLinks();
-            renderCategoryList();
-            renderLinks(); 
-        }
-
-        function deleteCategory(categoryToDelete) {
-            if (categoryToDelete === 'Sem Categoria') return;
-            
-            if (confirm(`Tem certeza que deseja excluir a categoria "${categoryToDelete}"? Todos os links serão movidos para "Sem Categoria".`)) {
-                
-                links.forEach(link => {
-                    if (link.category === categoryToDelete) {
-                        link.category = 'Sem Categoria';
-                    }
-                });
-
-                saveLinks();
-                renderCategoryList();
-                renderLinks(); 
-            }
-        }
-
-        // --- FUNÇÕES DE EDIÇÃO COMPLETA (NOVO) ---
-        
-        function openEditModal(index) {
-            const link = links[index];
-
-            document.getElementById('editLinkIndex').value = index;
-            document.getElementById('editLinkUrl').value = link.url;
-            document.getElementById('editLinkTitle').value = link.title;
-            document.getElementById('editLinkDescription').value = link.description;
-
-            // Popula o select do modal de edição com a categoria correta selecionada
-            populateCategorySelects('editLinkCategory', link.category);
-            
-            document.getElementById('editLinkModal').classList.add('active');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editLinkModal').classList.remove('active');
-        }
-
-        function validateAndCleanURL(url) {
-            if (!url.match(/^https?:\/\//i)) {
-                url = 'https://' + url;
-            }
-            try {
-                new URL(url);
-                return url;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function saveEditedLink() {
-            const index = parseInt(document.getElementById('editLinkIndex').value);
-            let newUrl = document.getElementById('editLinkUrl').value.trim();
-            const newTitle = document.getElementById('editLinkTitle').value.trim();
-            const newCategory = document.getElementById('editLinkCategory').value;
-            const newDescription = document.getElementById('editLinkDescription').value.trim();
-
-            if (!newUrl || !newTitle) {
-                alert('URL e Título são obrigatórios.');
-                return;
-            }
-
-            newUrl = validateAndCleanURL(newUrl);
-
-            if (!newUrl) {
-                alert('A URL fornecida não é válida. Por favor, corrija o formato.');
-                return;
-            }
-
-            links[index].url = newUrl;
-            links[index].title = newTitle;
-            links[index].category = newCategory;
-            links[index].description = newDescription;
-
-            saveLinks();
-            renderLinks();
-            closeEditModal();
-        }
-
-        // --- FUNÇÃO DE ADICIONAR LINK (Com Validação de URL) ---
-
-        function addLink() {
-            let url = document.getElementById('linkUrl').value.trim();
-            const title = document.getElementById('linkTitle').value.trim();
-            const description = document.getElementById('linkDescription').value.trim();
-            const category = document.getElementById('linkCategory').value;
-
-            if (!url || !title) {
-                alert('Por favor, preencha a URL e o título do link!');
-                return;
-            }
-            
-            url = validateAndCleanURL(url);
-
-            if (!url) {
-                alert('A URL fornecida não é válida. Por favor, corrija o formato.');
-                return;
-            }
-
-
-            links.push({
-                url: url,
-                title: title,
-                description: description,
-                notes: '',
-                favorite: false,
-                category: category,
-                editingTitle: false,
-                editingDescription: false,
-                editingCategory: false
-            });
-
-            document.getElementById('linkUrl').value = '';
-            document.getElementById('linkTitle').value = '';
-            document.getElementById('linkDescription').value = '';
-            
-            saveLinks();
-            renderLinks();
-        }
-        
-        // --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO (CORRIGIDO) ---
-
-        function renderLinks() {
-            const linksList = document.getElementById('linksList');
-            const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
-            const filterCategory = document.getElementById('filterCategory').value;
-
-            populateCategorySelects();
-
-            let filteredLinks = links.filter(link => {
-                const searchString = `${link.title} ${link.url} ${link.description} ${link.notes} ${link.category}`.toLowerCase();
-                const matchesSearch = searchValue === '' || searchString.includes(searchValue);
-                const matchesCategory = filterCategory === 'all' || link.category === filterCategory;
-                return matchesSearch && matchesCategory;
-            });
-
-            if (filteredLinks.length === 0) {
-                 linksList.innerHTML = `
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                        </svg>
-                        <h3>${searchValue || filterCategory !== 'all' ? 'Nenhum link encontrado com os filtros atuais' : 'Nenhum link salvo ainda'}</h3>
-                        <p>${searchValue || filterCategory !== 'all' ? 'Tente ajustar sua pesquisa ou filtro' : 'Adicione seu primeiro link usando o formulário acima'}</p>
-                    </div>
-                `;
-                initializeSortable();
-                return;
-            }
-
-            linksList.innerHTML = filteredLinks.map((link) => {
-                const originalIndex = links.indexOf(link); 
-                const linkNumber = `${originalIndex + 1}. `; 
-                
-                const categoryOptions = getUniqueCategories().map(cat => 
-                    `<option value="${cat}" ${link.category === cat ? 'selected' : ''}>${cat}</option>`
-                ).join('');
-
-                return `
-                    <div class="link-item ${link.favorite ? 'favorite' : ''}" data-id="${originalIndex}">
-                        <div class="link-header">
-                            ${link.editingTitle ? 
-                                `<input type="text" class="title-input" value="${link.title}" onblur="saveTitle(${originalIndex}, this.value)" onkeypress="if(event.key==='Enter') saveTitle(${originalIndex}, this.value)" autofocus>` :
-                                `<a href="${link.url}" target="_blank" class="link-title">${linkNumber}${link.title} 
-                                    ${link.editingCategory ?
-                                        `<select class="category-select-inline" onblur="saveCategory(${originalIndex}, this.value)" onchange="saveCategory(${originalIndex}, this.value)">
-                                            ${categoryOptions}
-                                        </select>` :
-                                        `<span class="link-category">${link.category}
-                                            <button class="icon-btn" onclick="toggleEditCategory(${originalIndex})" title="Editar Categoria">✏️</button>
-                                        </span>`
-                                    }
-                                </a>`
-                            }
-                            <div class="link-actions">
-                                <button class="icon-btn edit-btn" onclick="openEditModal(${originalIndex})" title="Editar Link Completo">
-                                    📝
-                                </button>
-                                <button class="icon-btn favorite-btn" onclick="toggleFavorite(${originalIndex})" title="Favoritar">
-                                    ${link.favorite ? '⭐' : '☆'}
-                                </button>
-                                <button class="icon-btn move-btn" onclick="openMoveModal(${originalIndex})" title="Mover">
-                                    ↕️
-                                </button>
-                                <button class="icon-btn delete-btn" onclick="deleteLink(${originalIndex})" title="Excluir">
-                                    🗑️
-                                </button>
-                            </div>
-                        </div>
-                        <div class="link-url">${link.url}</div>
-                        ${link.editingDescription ? 
-                            `<textarea class="description-input" onblur="saveDescription(${originalIndex}, this.value)" onkeypress="if(event.key==='Enter') saveDescription(${originalIndex}, this.value)">${link.description || ''}</textarea>
-                            <button class="icon-btn edit-btn" onclick="toggleEditDescription(${originalIndex})" title="Salvar Descrição" style="position: absolute; right: 25px; bottom: 85px;">✓</button>` :
-                            `<div class="link-description description-text" onclick="toggleEditDescription(${originalIndex})" title="Clique para editar">${link.description || 'Sem descrição (clique para adicionar)'}</div>`
-                        }
-                        
-                        <textarea class="link-notes" placeholder="Adicione notas aqui..." oninput="updateNotes(${originalIndex}, this.value)">${link.notes || ''}</textarea>
-                    </div>
-                `;
-            }).join('');
-            
-            initializeSortable();
-        }
-
-        // --- FUNÇÕES DE EDIÇÃO IN-LINE, ORDENAÇÃO E MODAIS (Restante) ---
-        // (As funções de edição in-line e modais de mover/backup permanecem inalteradas,
-        // mas a `renderLinks` agora usa o novo botão 📝)
-
-        function sortLinks(type) {
-            if (type === 'title') {
-                sortDirection = sortDirection * -1; 
-                links.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
-            } else if (type === 'favorite') {
-                links.sort((a, b) => {
-                    if (a.favorite && !b.favorite) return -1;
-                    if (!a.favorite && b.favorite) return 1;
-                    return 0; 
-                });
-            }
-            saveLinks();
-            renderLinks();
-        }
-
-        function initializeSortable() {
-            const list = document.getElementById('linksList');
-            const isFiltered = document.getElementById('searchInput').value.trim() !== '' || document.getElementById('filterCategory').value !== 'all';
-
-            if (list.sortable) {
-                list.sortable.destroy();
-            }
-
-            if (isFiltered) {
-                list.style.cursor = 'default';
-                return; 
-            }
-            
-            list.style.cursor = 'grab';
-            list.sortable = Sortable.create(list, {
-                animation: 150,
-                filter: '.title-input, .description-input, .category-select-inline, .link-notes',
-                onEnd: function (evt) {
-                    const oldIndex = evt.oldIndex;
-                    const newIndex = evt.newIndex;
-                    
-                    const itemToMove = links.splice(oldIndex, 1)[0];
-                    links.splice(newIndex, 0, itemToMove);
-                    
-                    saveLinks();
-                    renderLinks();
-                },
-            });
-        }
-        
-        function toggleFavorite(index) {
-            links[index].favorite = !links[index].favorite;
-            saveLinks();
-            renderLinks();
-        }
-
-        function toggleEditTitle(index) {
-            links.forEach((link, i) => {
-                if (i !== index) link.editingTitle = false;
-                link.editingDescription = false; 
-                link.editingCategory = false; 
-            });
-            links[index].editingTitle = !links[index].editingTitle;
-            renderLinks();
-        }
-
-        function saveTitle(index, newTitle) {
-            if (newTitle.trim()) {
-                links[index].title = newTitle.trim();
-            }
-            links[index].editingTitle = false;
-            saveLinks();
-            renderLinks();
-        }
-
-        function toggleEditDescription(index) {
-             links.forEach((link, i) => {
-                if (i !== index) link.editingDescription = false;
-                link.editingTitle = false;
-                link.editingCategory = false;
-            });
-            links[index].editingDescription = !links[index].editingDescription;
-            renderLinks();
-        }
-
-        function saveDescription(index, newDescription) {
-            links[index].description = newDescription.trim();
-            links[index].editingDescription = false;
-            saveLinks();
-            renderLinks();
-        }
-
-        function toggleEditCategory(index) {
-             links.forEach((link, i) => {
-                if (i !== index) link.editingCategory = false;
-                link.editingTitle = false;
-                link.editingDescription = false;
-            });
-            links[index].editingCategory = !links[index].editingCategory;
-            renderLinks();
-        }
-
-        function saveCategory(index, newCategory) {
-            links[index].category = newCategory;
-            links[index].editingCategory = false;
-            saveLinks();
-            renderLinks();
-        }
-
-        function updateNotes(index, value) {
-            links[index].notes = value;
-            saveLinks();
-        }
-
-        function deleteLink(index) {
-            if (confirm('Tem certeza que deseja excluir este link?')) {
-                links.splice(index, 1);
-                saveLinks();
-                renderLinks();
-            }
-        }
-
-        function openMoveModal(index) {
-            currentMoveIndex = index;
-            document.getElementById('maxPosition').textContent = links.length;
-            document.getElementById('targetPosition').setAttribute('max', links.length);
-            document.getElementById('targetPosition').value = index + 1;
-            document.getElementById('moveModal').classList.add('active');
-        }
-
-        function closeMoveModal() {
-            document.getElementById('moveModal').classList.remove('active');
-            currentMoveIndex = null;
-        }
-
-        function moveToPosition(position) {
-            if (currentMoveIndex === null) return;
-
-            const link = links.splice(currentMoveIndex, 1)[0];
-            
-            if (position === 'first') {
-                links.unshift(link);
-            } else if (position === 'last') {
-                links.push(link);
-            }
-
-            saveLinks();
-            renderLinks();
-            closeMoveModal();
-        }
-
-        function moveLinkToSpecificPosition() {
-            if (currentMoveIndex === null) return;
-            
-            const targetPositionInput = document.getElementById('targetPosition');
-            let targetPosition = parseInt(targetPositionInput.value); 
-            let targetIndex = targetPosition - 1; 
-            
-            if (isNaN(targetPosition) || targetPosition < 1 || targetPosition > links.length) {
-                alert(`Por favor, insira uma linha válida entre 1 e ${links.length}.`);
-                return;
-            }
-
-            const link = links.splice(currentMoveIndex, 1)[0];
-            links.splice(targetIndex, 0, link);
-
-            saveLinks();
-            renderLinks();
-            closeMoveModal();
-        }
+        // --- FUNÇÕES DE BACKUP (Exportar/Importar) ---
 
         function exportLinks() {
             const dataStr = JSON.stringify(links, null, 2);
@@ -947,6 +448,7 @@
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
+            alert("Backup exportado com sucesso! Procure por 'links_backup.json' na sua pasta de Downloads.");
         }
 
         function importLinks() {
@@ -963,7 +465,7 @@
                 try {
                     const importedLinks = JSON.parse(e.target.result);
                     if (Array.isArray(importedLinks)) {
-                        if (confirm(`Tem certeza que deseja substituir os ${links.length} links atuais por ${importedLinks.length} links importados?`)) {
+                        if (confirm(`Tem certeza que deseja substituir os ${links.length} links atuais por ${importedLinks.length} links importados? Esta ação é irreversível.`)) {
                             links = importedLinks.map(link => ({ 
                                 ...link, 
                                 category: link.category || 'Sem Categoria',
@@ -973,24 +475,457 @@
                             }));
                             saveLinks();
                             renderLinks();
-                            alert("Importação concluída com sucesso!");
+                            alert("Importação concluída com sucesso! Seus novos links foram carregados.");
                         }
                     } else {
                         alert("Formato de arquivo JSON inválido. O arquivo deve conter uma lista (array) de links.");
                     }
                 } catch (error) {
-                    alert("Erro ao ler o arquivo JSON. Verifique se o formato está correto.");
+                    alert("Erro ao ler o arquivo JSON. Verifique se o formato está correto. Detalhes: " + error.message);
                     console.error("Erro de importação:", error);
+                } finally {
+                    // Limpa o input de arquivo
+                    fileInput.value = '';
                 }
             };
             reader.readAsText(file);
         }
 
-        // Initialize the app
+        // --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO ---
+
+        function getUniqueCategoriesWithCount() {
+            const categoryCounts = {};
+            links.forEach(link => {
+                const category = link.category || 'Sem Categoria';
+                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+            });
+
+            // Ordena as categorias por nome
+            const sortedCategories = Object.keys(categoryCounts).sort();
+            return sortedCategories.map(category => ({
+                name: category,
+                count: categoryCounts[category]
+            }));
+        }
+
+        function populateCategoryFilters() {
+            const filterSelect = document.getElementById('filterCategory');
+            const linkCategorySelect = document.getElementById('linkCategory');
+            const uniqueCategoriesWithCount = getUniqueCategoriesWithCount();
+            const currentFilter = filterSelect.value;
+            
+            // 1. Atualizar o filtro de pesquisa (toolbar)
+            filterSelect.innerHTML = '<option value="all">Todas as Categorias (' + links.length + ')</option>';
+            
+            uniqueCategoriesWithCount.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = `${cat.name} (${cat.count})`;
+                if (cat.name === currentFilter) {
+                    option.selected = true;
+                }
+                filterSelect.appendChild(option);
+            });
+
+            // 2. Atualizar o select de adicionar novo link
+            const currentNewCategory = linkCategorySelect.value;
+            linkCategorySelect.innerHTML = '';
+            
+            uniqueCategoriesWithCount.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = cat.name;
+                // Mantém a categoria selecionada se já estiver no formulário
+                if (cat.name === currentNewCategory) {
+                    option.selected = true;
+                }
+                linkCategorySelect.appendChild(option);
+            });
+            // Adiciona a opção "Sem Categoria" se foi removida acidentalmente e não existia nenhuma
+            if (!linkCategorySelect.querySelector('option[value="Sem Categoria"]')) {
+                const defaultOption = document.createElement('option');
+                defaultOption.value = 'Sem Categoria';
+                defaultOption.textContent = 'Sem Categoria';
+                linkCategorySelect.prepend(defaultOption);
+            }
+        }
+
+        function renderLinks() {
+            const linksList = document.getElementById('linksList');
+            const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterCategory = document.getElementById('filterCategory').value;
+
+            // 1. Filtrar links
+            let filteredLinks = links.filter(link => {
+                const searchString = `${link.title} ${link.url} ${link.description} ${link.notes} ${link.category}`.toLowerCase();
+                const matchesSearch = searchString.includes(searchValue);
+                const matchesCategory = filterCategory === 'all' || link.category === filterCategory;
+                return matchesSearch && matchesCategory;
+            });
+            
+            // 2. Popular filtros (precisa ser feito antes do render)
+            populateCategoryFilters();
+
+            // 3. Estado vazio
+            if (filteredLinks.length === 0) {
+                linksList.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                        </svg>
+                        <h3>${searchValue || filterCategory !== 'all' ? 'Nenhum link encontrado com os filtros atuais' : 'Nenhum link salvo ainda'}</h3>
+                        <p>${searchValue || filterCategory !== 'all' ? 'Tente ajustar sua pesquisa ou filtro' : 'Adicione seu primeiro link usando o formulário acima'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 4. Renderizar links filtrados
+            linksList.innerHTML = filteredLinks.map((link, index) => {
+                // Usamos o índice original na lista 'links' para todas as operações de modificação
+                const originalIndex = links.findIndex(l => l === link); 
+                
+                // Conteúdo Principal
+                let titleContent, descriptionContent, categoryContent;
+
+                // Título Editável
+                if (link.editingTitle) {
+                    titleContent = `
+                        <input type="text" id="editTitle-${originalIndex}" class="title-input" value="${link.title.replace(/"/g, '&quot;')}" 
+                            onblur="saveInlineEdit(${originalIndex}, 'title', this.value)" 
+                            onkeydown="if(event.key === 'Enter') { this.blur(); }">
+                    `;
+                } else {
+                    titleContent = `
+                        <a href="${link.url}" target="_blank" class="link-title" title="${link.title}">
+                            ${link.title}
+                        </a>
+                    `;
+                }
+
+                // Categoria Editável
+                const uniqueCategories = getUniqueCategoriesWithCount().map(c => c.name);
+                if (link.editingCategory) {
+                    categoryContent = `
+                        <select id="editCategory-${originalIndex}" class="category-select-inline" 
+                            onchange="saveInlineEdit(${originalIndex}, 'category', this.value); renderLinks();">
+                            ${uniqueCategories.map(cat => 
+                                `<option value="${cat}" ${cat === link.category ? 'selected' : ''}>${cat}</option>`
+                            ).join('')}
+                        </select>
+                    `;
+                } else {
+                    categoryContent = `
+                        <span class="link-category" onclick="toggleInlineEdit(${originalIndex}, 'category')">
+                            ${link.category}
+                        </span>
+                    `;
+                }
+
+                // Descrição Editável
+                if (link.editingDescription) {
+                    descriptionContent = `
+                        <textarea id="editDescription-${originalIndex}" class="description-input" 
+                            onblur="saveInlineEdit(${originalIndex}, 'description', this.value)">${link.description.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    `;
+                } else {
+                    descriptionContent = `
+                        <p class="link-description" onclick="toggleInlineEdit(${originalIndex}, 'description')">
+                            ${link.description || 'Clique para adicionar uma descrição...'}
+                        </p>
+                    `;
+                }
+
+                return `
+                    <div class="link-item ${link.favorite ? 'favorite' : ''}" data-id="${originalIndex}">
+                        <div class="link-header">
+                            <div style="flex: 1; min-width: 0;">
+                                ${titleContent}
+                                <p class="link-url">${link.url}</p>
+                            </div>
+                            <div class="link-actions">
+                                <button class="icon-btn edit-btn" title="Editar Título/URL" onclick="toggleInlineEdit(${originalIndex}, 'title')">✏️</button>
+                                <button class="icon-btn favorite-btn" title="${link.favorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}" onclick="toggleFavorite(${originalIndex})">${link.favorite ? '⭐' : '☆'}</button>
+                                <button class="icon-btn move-btn" title="Mover Posição" onclick="openMoveModal(${originalIndex})">↕️</button>
+                                <button class="icon-btn delete-btn" title="Excluir Link" onclick="deleteLink(${originalIndex})">🗑️</button>
+                            </div>
+                        </div>
+                        
+                        ${descriptionContent}
+                        ${categoryContent}
+                        
+                        <details class="link-notes" style="margin-top: 10px;">
+                            <summary style="font-weight: 600; cursor: pointer;">Notas (Clique para ${link.notes ? 'Ver/Editar' : 'Adicionar'})</summary>
+                            <textarea onblur="saveNotes(${originalIndex}, this.value)" style="width: 100%; border: none; padding: 10px; margin-top: 5px; resize: vertical; border-radius: 5px; background: inherit; color: inherit; border: 1px solid #ccc;">${link.notes}</textarea>
+                        </details>
+                    </div>
+                `;
+            }).join('');
+
+            // 5. Reaplicar SortableJS após a renderização
+            initializeSortable();
+        }
+
+        // --- FUNÇÕES DE CRUD (Adicionar, Excluir, Mover) ---
+
+        function addLink() {
+            const urlInput = document.getElementById('linkUrl');
+            const titleInput = document.getElementById('linkTitle');
+            const categoryInput = document.getElementById('linkCategory');
+            const descriptionInput = document.getElementById('linkDescription');
+
+            const url = urlInput.value.trim();
+            const title = titleInput.value.trim();
+            const category = categoryInput.value.trim() || 'Sem Categoria';
+            const description = descriptionInput.value.trim();
+
+            if (url === '' || title === '') {
+                alert('URL e Título são obrigatórios.');
+                return;
+            }
+
+            const newLink = {
+                url,
+                title,
+                description,
+                notes: '',
+                favorite: false,
+                category: category 
+            };
+
+            links.unshift(newLink); // Adiciona no topo
+            saveLinks();
+            renderLinks();
+
+            // Limpa o formulário
+            urlInput.value = '';
+            titleInput.value = '';
+            descriptionInput.value = '';
+            categoryInput.value = 'Sem Categoria';
+        }
+
+        function deleteLink(index) {
+            if (confirm(`Tem certeza que deseja excluir o link "${links[index].title}"?`)) {
+                links.splice(index, 1);
+                saveLinks();
+                renderLinks();
+            }
+        }
+
+        function toggleFavorite(index) {
+            links[index].favorite = !links[index].favorite;
+            saveLinks();
+            renderLinks();
+        }
+
+        function saveNotes(index, notes) {
+            links[index].notes = notes;
+            saveLinks();
+        }
+
+        // --- EDIÇÃO INLINE (Novo) ---
+
+        function toggleInlineEdit(index, field) {
+            // Desativa qualquer edição ativa para evitar múltiplos inputs abertos
+            links.forEach((link, i) => {
+                if (i !== index) {
+                    link.editingTitle = false;
+                    link.editingDescription = false;
+                    link.editingCategory = false;
+                }
+            });
+
+            // Ativa/Desativa o campo específico
+            if (field === 'title') {
+                links[index].editingTitle = !links[index].editingTitle;
+                links[index].editingDescription = false; // Desativa outras edições
+                links[index].editingCategory = false;
+            } else if (field === 'description') {
+                links[index].editingDescription = !links[index].editingDescription;
+                links[index].editingTitle = false;
+                links[index].editingCategory = false;
+            } else if (field === 'category') {
+                links[index].editingCategory = !links[index].editingCategory;
+                links[index].editingTitle = false;
+                links[index].editingDescription = false;
+            }
+
+            renderLinks();
+
+            // Foca no input após a renderização
+            setTimeout(() => {
+                if (field === 'title' && links[index].editingTitle) {
+                    document.getElementById(`editTitle-${index}`)?.focus();
+                } else if (field === 'description' && links[index].editingDescription) {
+                    document.getElementById(`editDescription-${index}`)?.focus();
+                }
+            }, 50);
+        }
+
+        function saveInlineEdit(index, field, value) {
+            const trimmedValue = value.trim();
+
+            if (field === 'title') {
+                if (trimmedValue === '') {
+                    alert('O título não pode estar vazio.');
+                    // Deixa a flag de edição ativa
+                    return; 
+                }
+                links[index].title = trimmedValue;
+                links[index].editingTitle = false;
+            } else if (field === 'description') {
+                links[index].description = trimmedValue;
+                links[index].editingDescription = false;
+            } else if (field === 'category') {
+                links[index].category = trimmedValue || 'Sem Categoria';
+                links[index].editingCategory = false;
+            }
+
+            saveLinks();
+            renderLinks();
+        }
+
+        // --- FUNÇÕES DE ORDENAÇÃO ---
+
+        function sortLinks(type) {
+            if (type === 'title') {
+                // Inverte a direção se estiver ordenando por título novamente
+                sortDirection = sortDirection * -1;
+                links.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
+            } else if (type === 'favorite') {
+                // Seta a direção para 1 (Asc) para a ordenação A-Z padrão após
+                sortDirection = 1; 
+                links.sort((a, b) => {
+                    // Favoritos (true) vão para o topo
+                    if (a.favorite && !b.favorite) return -1;
+                    if (!a.favorite && b.favorite) return 1;
+                    // Mantém a ordem relativa dos demais links
+                    return 0; 
+                });
+            }
+
+            saveLinks();
+            renderLinks();
+        }
+
+        // --- DRAG AND DROP (SortableJS) ---
+
+        function initializeSortable() {
+            const list = document.getElementById('linksList');
+            if (list) {
+                new Sortable(list, {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    // Função chamada ao soltar o item
+                    onEnd: function (evt) {
+                        const oldIndex = parseInt(evt.item.getAttribute('data-id'));
+                        const newElement = evt.item;
+                        const newIndex = Array.from(list.children).findIndex(el => el === newElement);
+
+                        // O SortableJS move o elemento DOM. Precisamos mover o objeto no array 'links'.
+                        // O oldIndex e newIndex são baseados nos elementos *visíveis/filtrados*.
+                        // Precisamos refazer o mapeamento para garantir que o movimento seja feito na array 'links' principal.
+                        
+                        // 1. Encontra a posição atual do link movido na array 'links'
+                        const draggedLink = links[oldIndex]; 
+                        
+                        // 2. Cria uma array dos links filtrados/visíveis
+                        const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+                        const filterCategory = document.getElementById('filterCategory').value;
+                        const filteredLinks = links.filter(link => {
+                            const searchString = `${link.title} ${link.url} ${link.description} ${link.notes} ${link.category}`.toLowerCase();
+                            const matchesSearch = searchString.includes(searchValue);
+                            const matchesCategory = filterCategory === 'all' || link.category === filterCategory;
+                            return matchesSearch && matchesCategory;
+                        });
+
+                        // 3. Encontra os índices alvo na array 'links'
+                        // Remove o link arrastado da lista principal
+                        links.splice(oldIndex, 1);
+                        
+                        // Encontra o link de referência (o que estava na nova posição)
+                        const referenceLink = filteredLinks[newIndex];
+                        
+                        let targetIndex;
+                        if (referenceLink) {
+                            // Encontra o índice na array 'links' principal para o link de referência
+                            targetIndex = links.findIndex(link => link === referenceLink);
+                        } else {
+                            // Se não houver referência (moveu para o final da lista visível)
+                            targetIndex = links.length;
+                        }
+                        
+                        // Insere o link arrastado na nova posição na lista principal
+                        links.splice(targetIndex, 0, draggedLink);
+
+                        saveLinks();
+                        renderLinks(); // Renderiza para reordenar os data-id e garantir consistência
+                    }
+                });
+            }
+        }
+        
+        // --- FUNÇÕES DE MODAL DE MOVIMENTAÇÃO POR POSIÇÃO ---
+
+        function openMoveModal(index) {
+            currentMoveIndex = index;
+            document.getElementById('maxPosition').textContent = links.length;
+            document.getElementById('targetPosition').max = links.length;
+            document.getElementById('moveModal').classList.add('active');
+        }
+
+        function closeMoveModal() {
+            document.getElementById('moveModal').classList.remove('active');
+            currentMoveIndex = null;
+            document.getElementById('targetPosition').value = '';
+        }
+
+        function moveLinkInArray(fromIndex, toIndex) {
+            if (fromIndex < 0 || fromIndex >= links.length || toIndex < 0 || toIndex >= links.length || fromIndex === toIndex) {
+                return;
+            }
+            
+            const [movedLink] = links.splice(fromIndex, 1);
+            links.splice(toIndex, 0, movedLink);
+
+            saveLinks();
+            renderLinks();
+            closeMoveModal();
+        }
+
+        function moveToPosition(position) {
+            if (currentMoveIndex === null) return;
+            
+            if (position === 'first') {
+                moveLinkInArray(currentMoveIndex, 0);
+            } else if (position === 'last') {
+                moveLinkInArray(currentMoveIndex, links.length - 1);
+            }
+        }
+
+        function moveLinkToSpecificPosition() {
+            if (currentMoveIndex === null) return;
+
+            const targetPositionInput = document.getElementById('targetPosition');
+            let targetPosition = parseInt(targetPositionInput.value);
+
+            if (isNaN(targetPosition) || targetPosition < 1 || targetPosition > links.length) {
+                alert(`Por favor, insira um número válido entre 1 e ${links.length}.`);
+                return;
+            }
+            
+            // Posição 1 no UI é índice 0 no array, então subtraímos 1
+            const targetIndex = targetPosition - 1; 
+
+            moveLinkInArray(currentMoveIndex, targetIndex);
+        }
+
+        // --- INICIALIZAÇÃO ---
+
         document.addEventListener('DOMContentLoaded', () => {
             loadDarkModePreference();
-            updatePageTitleCount();
             renderLinks();
+            // A inicialização do SortableJS é feita dentro de renderLinks()
         });
     </script>
 </body>
