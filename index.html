@@ -3,319 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Links</title>
+    <title>Gerenciador de Links Avançado</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* CSS BÁSICO */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        h1 { color: #667eea; margin-bottom: 30px; text-align: center; font-size: 2.5em; }
+        
+        /* Formulários e Inputs */
+        .add-link-form { background: #f8f9ff; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #667eea; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: 600; }
+        input[type="text"], input[type="url"], textarea, input[type="number"], select, #searchInput { 
+            width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; transition: border 0.3s; 
         }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        /* Botões */
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .btn-secondary { background: #95a5a6; color: white; margin-right: 10px; }
+        .btn-secondary:hover { background: #7f8c8d; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        /* Lista de Links */
+        .link-item { 
+            background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #e0e0e0; transition: all 0.3s; position: relative; 
+            cursor: move; /* Indica que o item é arrastável */
         }
+        .link-item:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .link-item.favorite { border-color: #ffd700; background: #fffdf0; }
+        .link-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+        .link-title { color: #667eea; font-size: 1.3em; font-weight: 700; text-decoration: none; flex: 1; word-break: break-word; }
+        .link-title:hover { text-decoration: underline; }
+        .link-url { color: #999; font-size: 0.9em; word-break: break-all; margin-bottom: 10px; }
+        .link-category { background: #ecf0f1; color: #34495e; padding: 3px 8px; border-radius: 5px; font-size: 0.8em; font-weight: 600; margin-left: 10px; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        /* Ações e Modal */
+        .link-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; transition: transform 0.2s; }
+        .icon-btn:hover { transform: scale(1.2); }
+        .favorite-btn { color: #ffd700; }
+        .move-btn { color: #667eea; }
+        .delete-btn { color: #ff4757; }
+        .move-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .move-modal.active { display: flex; }
+        .move-modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+
+        /* NOVO: Barra de Ferramentas e Filtros */
+        .toolbar { 
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; 
+            margin-bottom: 20px; padding: 15px; border-radius: 10px; background: #f0f4ff; border: 1px solid #ddd;
         }
+        .toolbar-group { display: flex; gap: 10px; align-items: center; }
+        .toolbar label { margin: 0; font-weight: 700; color: #333; }
+        .utility-box { background: #ecf0f1; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #bdc3c7; }
+        #linksList { min-height: 50px; } /* Garante espaço para Drag and Drop */
 
-        h1 {
-            color: #667eea;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.5em;
-        }
-
-        .add-link-form {
-            background: #f8f9ff;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 2px solid #667eea;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        input[type="text"],
-        input[type="url"],
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="url"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .link-item {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #e0e0e0;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .link-item:hover {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-
-        .link-item.favorite {
-            border-color: #ffd700;
-            background: #fffdf0;
-        }
-
-        .link-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 10px;
-        }
-
-        .link-title {
-            color: #667eea;
-            font-size: 1.3em;
-            font-weight: 700;
-            text-decoration: none;
-            flex: 1;
-            word-break: break-word;
-        }
-
-        .link-title:hover {
-            text-decoration: underline;
-        }
-
-        .title-input {
-            width: 100%;
-            padding: 8px;
-            border: 2px solid #667eea;
-            border-radius: 6px;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #667eea;
-            background: white;
-            margin-bottom: 10px;
-        }
-
-        .title-input:focus {
-            outline: none;
-            border-color: #5568d3;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .edit-btn {
-            color: #2ecc71;
-        }
-
-        .link-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 5px;
-            transition: transform 0.2s;
-        }
-
-        .icon-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .favorite-btn {
-            color: #ffd700;
-        }
-
-        .move-btn {
-            color: #667eea;
-        }
-
-        .delete-btn {
-            color: #ff4757;
-        }
-
-        .link-description {
-            color: #666;
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-
-        .link-notes {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            background: #f9f9f9;
-        }
-
-        .link-url {
-            color: #999;
-            font-size: 0.9em;
-            word-break: break-all;
-            margin-bottom: 10px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-
-        .empty-state svg {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        .move-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .move-modal.active {
-            display: flex;
-        }
-
-        .move-modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .move-modal h3 {
-            margin-bottom: 20px;
-            color: #667eea;
-        }
-
-        .move-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .move-options button {
-            width: 100%;
-        }
-
-        .position-input-group {
-            margin-bottom: 20px;
-        }
-
-        .position-input-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .position-input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .position-input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
+        /* Responsividade */
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .link-header {
-                flex-direction: column;
-            }
-
-            .link-actions {
-                margin-top: 10px;
-            }
+            .container { padding: 20px; }
+            h1 { font-size: 1.8em; }
+            .link-header { flex-direction: column; }
+            .link-actions { margin-top: 10px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-group { flex-direction: column; align-items: stretch; gap: 5px; }
+            .toolbar .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📚 Gerenciador de Links</h1>
+        <h1>📚 Gerenciador de Links Avançado</h1>
 
+        <div class="utility-box">
+            <h2 style="margin-bottom: 15px; color: #34495e; font-size: 1.5em;">💾 Backup de Dados</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                <button class="btn btn-primary" onclick="exportLinks()">Exportar (Download JSON)</button>
+                <input type="file" id="importFile" accept=".json" style="width: auto; flex-grow: 1; padding: 5px;" onchange="importLinks()">
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Importar (Upload JSON)</button>
+            </div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Use o backup para salvar e restaurar seus links em outro dispositivo.</p>
+        </div>
+        
         <div class="add-link-form">
             <h2 style="margin-bottom: 20px; color: #667eea;">➕ Adicionar Novo Link</h2>
             <div class="form-group">
@@ -327,12 +102,45 @@
                 <input type="text" id="linkTitle" placeholder="Título do link" required>
             </div>
             <div class="form-group">
+                <label for="linkCategory">Categoria:</label>
+                <select id="linkCategory">
+                    <option value="Sem Categoria">Sem Categoria</option>
+                    <option value="Desenvolvimento">Desenvolvimento</option>
+                    <option value="Finanças">Finanças</option>
+                    <option value="Utilidades">Utilidades</option>
+                    <option value="Pessoal">Pessoal</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="linkDescription">Descrição:</label>
                 <textarea id="linkDescription" placeholder="Descrição do link"></textarea>
             </div>
             <button class="btn btn-primary" onclick="addLink()">Adicionar Link</button>
         </div>
+        
+        <div class="add-link-form" style="padding: 15px 25px; margin-bottom: 30px;">
+            <h2 style="margin-bottom: 20px; color: #764ba2; font-size: 1.5em;">🔍 Filtros e Ordenação</h2>
+            
+            <div class="form-group">
+                <label for="searchInput">Pesquisar:</label>
+                <input type="text" id="searchInput" oninput="renderLinks()" placeholder="Título, URL, descrição ou notas...">
+            </div>
 
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <label for="filterCategory">Filtrar por Categoria:</label>
+                    <select id="filterCategory" onchange="renderLinks()">
+                        <option value="all">Todas as Categorias</option>
+                        </select>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="btn btn-secondary" onclick="sortLinks('favorite')">⭐ Favoritos no Topo</button>
+                    <button class="btn btn-secondary" onclick="sortLinks('title')">A-Z / Z-A</button>
+                </div>
+            </div>
+        </div>
         <div id="linksList"></div>
     </div>
 
@@ -342,127 +150,322 @@
             <div class="move-options">
                 <button class="btn btn-primary" onclick="moveToPosition('first')">⬆️ Mover para Primeira</button>
                 <button class="btn btn-primary" onclick="moveToPosition('last')">⬇️ Mover para Última</button>
-                <button class="btn" style="background: #95a5a6; color: white;" onclick="closeMoveModal()">Cancelar</button>
             </div>
+            
+            <div class="position-input-group">
+                <label for="targetPosition">Mover para a linha (1 - <span id="maxPosition">1</span>):</label>
+                <input type="number" id="targetPosition" placeholder="Ex: 5" min="1">
+                <button class="btn btn-primary" style="margin-top: 10px;" onclick="moveLinkToSpecificPosition()">Mover para Posição</button>
+            </div>
+
+            <button class="btn" style="background: #95a5a6; color: white;" onclick="closeMoveModal()">Cancelar</button>
         </div>
     </div>
 
     <script>
-        let links = [
-            { url: 'https://github.com/asl43/rifa_solidaria', title: 'Rifa Solidária – Castração de Cães e Gatos', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Futebol', title: 'Futebol', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Alarme', title: 'Alarme', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Sv_diario', title: 'SV Diário', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Registro_SV', title: 'Registro SV', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Link_utilidades', title: 'Link Utilidades', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Futebol1', title: 'Futebol 1', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/SV_relatorio', title: 'SV Relatório', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Conversortextoavancado', title: 'Conversor Texto Avançado', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/SistemacontroleVTR', title: 'Sistema Controle VTR', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Monitor-investimento-', title: 'Monitor Investimento', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Gerenciador-arquivo-', title: 'Gerenciador Arquivo', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/System-de-estudos-', title: 'System de Estudos', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/rifa_beneficente', title: 'Rifa Beneficente', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Bin', title: 'Bin', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Audio', title: 'Audio', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Bing', title: 'Bing', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Encurto', title: 'Encurtador', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Sudoku', title: 'Sudoku', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Gest', title: 'Gest', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Gest-or', title: 'Gestor', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Click', title: 'Click', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Energia-consumo', title: 'Energia Consumo', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Gest-sv', title: 'Gest SV', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/aguaia', title: 'Aguaia', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Financy', title: 'Financy', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Pet', title: 'Pet', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Gps', title: 'GPS', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/CONVERTMP3', title: 'Converter MP3', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Creacao-vd', title: 'Criação VD', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Anota-es', title: 'Anotações', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Calend-rio-e-LEMBRETES-', title: 'Calendário e Lembretes', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/mp43', title: 'MP4', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Edi-o-foto', title: 'Edição Foto', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Recicl', title: 'Reciclagem', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Compara', title: 'Comparador', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Autoagendar', title: 'Auto Agendar', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Imgdesenh', title: 'Img Desenho', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/BLOCO', title: 'Bloco', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/ANALIZADOR', title: 'Analisador', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Analy-tel', title: 'Analy Tel', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Chtbot', title: 'Chatbot', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Chat-pwa', title: 'Chat PWA', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Botcht', title: 'Bot Chat', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Integracbot', title: 'Integração Bot', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/gest-sv2', title: 'Gest SV 2', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/gest-sv3', title: 'Gest SV 3', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/gest-sv4', title: 'Gest SV 4', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/contrutor-de-chatbot-', title: 'Construtor de Chatbot', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Chat_Interno', title: 'Chat Interno', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/SMART-AGENDA', title: 'Smart Agenda', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/SMART-AGENDA-SIMILAR', title: 'Smart Agenda Similar', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/Agend', title: 'Agenda', description: '', notes: '', favorite: false },
-            { url: 'https://github.com/asl43/empenho-de-J', title: 'Empenho de J', description: '', notes: '', favorite: false }
+        const initialLinks = [
+            // SEU NOVO LINK ADICIONADO AQUI
+            { url: 'https://asl43.github.io/repositorio-/', title: 'REPOSITORIO DE LINKS', description: 'Link do próprio Gerenciador de Links.', notes: '', favorite: true, category: 'Desenvolvimento' },
+            
+            // Seus links anteriores
+            { url: 'https://github.com/asl43/rifa_solidaria', title: 'Rifa Solidária – Castração de Cães e Gatos', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/Futebol', title: 'Futebol', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Alarme', title: 'Alarme', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/Sv_diario', title: 'SV Diário', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Registro_SV', title: 'Registro SV', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Link_utilidades', title: 'Link Utilidades', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Futebol1', title: 'Futebol 1', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/SV_relatorio', title: 'SV Relatório', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Conversortextoavancado', title: 'Conversor Texto Avançado', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/SistemacontroleVTR', title: 'Sistema Controle VTR', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Monitor-investimento-', title: 'Monitor Investimento', description: '', notes: '', favorite: false, category: 'Finanças' },
+            { url: 'https://github.com/asl43/Gerenciador-arquivo-', title: 'Gerenciador Arquivo', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/System-de-estudos-', title: 'System de Estudos', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/rifa_beneficente', title: 'Rifa Beneficente', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/Bin', title: 'Bin', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Audio', title: 'Audio', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/Bing', title: 'Bing', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Encurto', title: 'Encurtador', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Sudoku', title: 'Sudoku', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Gest', title: 'Gest', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Gest-or', title: 'Gestor', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Click', title: 'Click', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Energia-consumo', title: 'Energia Consumo', description: '', notes: '', favorite: false, category: 'Finanças' },
+            { url: 'https://github.com/asl43/Gest-sv', title: 'Gest SV', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/aguaia', title: 'Aguaia', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Financy', title: 'Financy', description: '', notes: '', favorite: false, category: 'Finanças' },
+            { url: 'https://github.com/asl43/Pet', title: 'Pet', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/Gps', title: 'GPS', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/CONVERTMP3', title: 'Converter MP3', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/Creacao-vd', title: 'Criação VD', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/Anota-es', title: 'Anotações', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/Calend-rio-e-LEMBRETES-', title: 'Calendário e Lembretes', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/mp43', title: 'MP4', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Edi-o-foto', title: 'Edição Foto', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/Recicl', title: 'Reciclagem', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/Compara', title: 'Comparador', description: '', notes: '', favorite: false, category: 'Utilidades' },
+            { url: 'https://github.com/asl43/Autoagendar', title: 'Auto Agendar', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Imgdesenh', title: 'Img Desenho', description: '', notes: '', favorite: false, category: 'Outros' },
+            { url: 'https://github.com/asl43/BLOCO', title: 'Bloco', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/ANALIZADOR', title: 'Analisador', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Analy-tel', title: 'Analy Tel', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Chtbot', title: 'Chatbot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Chat-pwa', title: 'Chat PWA', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Botcht', title: 'Bot Chat', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Integracbot', title: 'Integração Bot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/gest-sv2', title: 'Gest SV 2', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/gest-sv3', title: 'Gest SV 3', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/gest-sv4', title: 'Gest SV 4', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/contrutor-de-chatbot-', title: 'Construtor de Chatbot', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/Chat_Interno', title: 'Chat Interno', description: '', notes: '', favorite: false, category: 'Desenvolvimento' },
+            { url: 'https://github.com/asl43/SMART-AGENDA', title: 'Smart Agenda', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/SMART-AGENDA-SIMILAR', title: 'Smart Agenda Similar', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/Agend', title: 'Agenda', description: '', notes: '', favorite: false, category: 'Pessoal' },
+            { url: 'https://github.com/asl43/empenho-de-J', title: 'Empenho de J', description: '', notes: '', favorite: false, category: 'Finanças' }
         ];
+
+        // --- Variáveis Globais ---
+        let links = loadLinks(); 
         let currentMoveIndex = null;
+        let sortDirection = 1; // 1 para A-Z/Ascendente, -1 para Z-A/Descendente
+        
+        // --- FUNÇÕES DE PERSISTÊNCIA (localStorage) ---
+
+        function loadLinks() {
+            try {
+                const savedLinks = localStorage.getItem('myLinkManagerLinks');
+                if (savedLinks) {
+                    const parsedLinks = JSON.parse(savedLinks);
+                    // Garante que links antigos sem 'category' tenham um valor padrão
+                    return parsedLinks.map(link => ({ 
+                        ...link, 
+                        category: link.category || 'Sem Categoria' 
+                    }));
+                }
+                // Adiciona 'category' padrão aos links iniciais se não vierem com ela
+                return initialLinks.map(link => ({ 
+                    ...link, 
+                    category: link.category || 'Sem Categoria' 
+                }));
+            } catch (e) {
+                console.error("Erro ao carregar links do localStorage:", e);
+                return initialLinks;
+            }
+        }
 
         function saveLinks() {
-            // Dados salvos apenas na memória durante a sessão
+            try {
+                localStorage.setItem('myLinkManagerLinks', JSON.stringify(links));
+            } catch (e) {
+                console.error("Erro ao salvar links no localStorage:", e);
+            }
+        }
+
+        // --- FUNÇÕES DE BACKUP (Exportar/Importar) ---
+
+        function exportLinks() {
+            const dataStr = JSON.stringify(links, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'links_backup.json';
+
+            let linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importLinks() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert("Por favor, selecione um arquivo JSON para importar.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedLinks = JSON.parse(e.target.result);
+                    if (Array.isArray(importedLinks)) {
+                        if (confirm(`Tem certeza que deseja substituir os ${links.length} links atuais por ${importedLinks.length} links importados?`)) {
+                            links = importedLinks.map(link => ({ 
+                                ...link, 
+                                category: link.category || 'Sem Categoria' 
+                            }));
+                            saveLinks();
+                            renderLinks();
+                            alert("Importação concluída com sucesso!");
+                        }
+                    } else {
+                        alert("Formato de arquivo JSON inválido. O arquivo deve conter uma lista (array) de links.");
+                    }
+                } catch (error) {
+                    alert("Erro ao ler o arquivo JSON. Verifique se o formato está correto.");
+                    console.error("Erro de importação:", error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO ---
+
+        function getUniqueCategories() {
+            // Obtém categorias únicas de todos os links, incluindo novos, e as ordena
+            const categories = links.map(link => link.category).filter(Boolean);
+            return [...new Set(categories)].sort();
+        }
+
+        function populateCategoryFilters() {
+            const filterSelect = document.getElementById('filterCategory');
+            const uniqueCategories = getUniqueCategories();
+            const currentFilter = filterSelect.value;
+            
+            filterSelect.innerHTML = '<option value="all">Todas as Categorias</option>';
+            
+            uniqueCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                if (category === currentFilter) {
+                    option.selected = true;
+                }
+                filterSelect.appendChild(option);
+            });
         }
 
         function renderLinks() {
             const linksList = document.getElementById('linksList');
+            const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterCategory = document.getElementById('filterCategory').value;
+
+            // 1. Filtrar links
+            let filteredLinks = links.filter(link => {
+                const searchString = `${link.title} ${link.url} ${link.description} ${link.notes}`.toLowerCase();
+                const matchesSearch = searchString.includes(searchValue);
+                const matchesCategory = filterCategory === 'all' || link.category === filterCategory;
+                return matchesSearch && matchesCategory;
+            });
             
-            if (links.length === 0) {
+            // 2. Popular filtros (precisa ser feito antes do render)
+            populateCategoryFilters();
+
+            // 3. Estado vazio
+            if (filteredLinks.length === 0) {
                 linksList.innerHTML = `
                     <div class="empty-state">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                         </svg>
-                        <h3>Nenhum link salvo ainda</h3>
-                        <p>Adicione seu primeiro link usando o formulário acima</p>
+                        <h3>${searchValue || filterCategory !== 'all' ? 'Nenhum link encontrado com os filtros atuais' : 'Nenhum link salvo ainda'}</h3>
+                        <p>${searchValue || filterCategory !== 'all' ? 'Tente ajustar sua pesquisa ou filtro' : 'Adicione seu primeiro link usando o formulário acima'}</p>
                     </div>
                 `;
                 return;
             }
 
-            linksList.innerHTML = links.map((link, index) => {
-                const linkNumber = `${index + 1}. `; 
+            // 4. Renderizar links filtrados
+            linksList.innerHTML = filteredLinks.map((link, index) => {
+                // Encontrar o índice original para usar nas funções (delete, move, etc.)
+                const originalIndex = links.indexOf(link); 
+                const linkNumber = `${originalIndex + 1}. `; 
                 
                 return `
-                    <div class="link-item ${link.favorite ? 'favorite' : ''}">
+                    <div class="link-item ${link.favorite ? 'favorite' : ''}" data-id="${originalIndex}">
                         <div class="link-header">
                             ${link.editing ? 
-                                `<input type="text" class="title-input" value="${link.title}" onblur="saveTitle(${index}, this.value)" onkeypress="if(event.key==='Enter') saveTitle(${index}, this.value)" autofocus>` :
-                                `<a href="${link.url}" target="_blank" class="link-title">${linkNumber}${link.title}</a>`
+                                `<input type="text" class="title-input" value="${link.title}" onblur="saveTitle(${originalIndex}, this.value)" onkeypress="if(event.key==='Enter') saveTitle(${originalIndex}, this.value)" autofocus>` :
+                                `<a href="${link.url}" target="_blank" class="link-title">${linkNumber}${link.title} 
+                                    <span class="link-category">${link.category}</span>
+                                </a>`
                             }
                             <div class="link-actions">
-                                <button class="icon-btn edit-btn" onclick="toggleEditTitle(${index})" title="${link.editing ? 'Salvar' : 'Editar Título'}">
+                                <button class="icon-btn edit-btn" onclick="toggleEditTitle(${originalIndex})" title="${link.editing ? 'Salvar' : 'Editar Título'}">
                                     ${link.editing ? '✓' : '✏️'}
                                 </button>
-                                <button class="icon-btn favorite-btn" onclick="toggleFavorite(${index})" title="Favoritar">
+                                <button class="icon-btn favorite-btn" onclick="toggleFavorite(${originalIndex})" title="Favoritar">
                                     ${link.favorite ? '⭐' : '☆'}
                                 </button>
-                                <button class="icon-btn move-btn" onclick="openMoveModal(${index})" title="Mover">
+                                <button class="icon-btn move-btn" onclick="openMoveModal(${originalIndex})" title="Mover">
                                     ↕️
                                 </button>
-                                <button class="icon-btn delete-btn" onclick="deleteLink(${index})" title="Excluir">
+                                <button class="icon-btn delete-btn" onclick="deleteLink(${originalIndex})" title="Excluir">
                                     🗑️
                                 </button>
                             </div>
                         </div>
                         <div class="link-url">${link.url}</div>
                         <div class="link-description">${link.description || 'Sem descrição'}</div>
-                        <textarea class="link-notes" placeholder="Adicione notas aqui..." oninput="updateNotes(${index}, this.value)">${link.notes || ''}</textarea>
+                        <textarea class="link-notes" placeholder="Adicione notas aqui..." oninput="updateNotes(${originalIndex}, this.value)">${link.notes || ''}</textarea>
                     </div>
                 `;
             }).join('');
+            
+            // 5. Reiniciar o Drag and Drop
+            initializeSortable();
         }
+
+        // --- FUNÇÕES DE ORDENAÇÃO (Sort) ---
+
+        function sortLinks(type) {
+            if (type === 'title') {
+                // Alterna a direção (A-Z ou Z-A)
+                sortDirection = sortDirection * -1; 
+                links.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
+            } else if (type === 'favorite') {
+                // Ordena favoritos primeiro 
+                links.sort((a, b) => {
+                    if (a.favorite && !b.favorite) return -1;
+                    if (!a.favorite && b.favorite) return 1;
+                    return 0; 
+                });
+            }
+            saveLinks();
+            renderLinks();
+        }
+
+        // --- FUNÇÕES DE DRAG AND DROP (Sortable.js) ---
+
+        function initializeSortable() {
+            const list = document.getElementById('linksList');
+            // Só permite o Drag and Drop se não houver filtro ou pesquisa ativa
+            const isFiltered = document.getElementById('searchInput').value.trim() !== '' || document.getElementById('filterCategory').value !== 'all';
+
+            if (list.sortable) {
+                list.sortable.destroy();
+            }
+
+            if (isFiltered) {
+                list.style.cursor = 'default';
+                return; // Não inicializa o Sortable
+            }
+            
+            list.style.cursor = 'move';
+            list.sortable = Sortable.create(list, {
+                animation: 150,
+                filter: '.title-input, .link-notes',
+                onEnd: function (evt) {
+                    const oldIndex = evt.oldIndex;
+                    const newIndex = evt.newIndex;
+                    
+                    // O Sortable.js move os elementos visuais. Agora atualizamos o array links.
+                    const itemToMove = links.splice(oldIndex, 1)[0];
+                    links.splice(newIndex, 0, itemToMove);
+                    
+                    saveLinks();
+                    renderLinks();
+                },
+            });
+        }
+
+        // --- FUNÇÕES DE CRUD E MOVIMENTAÇÃO ---
 
         function addLink() {
             const url = document.getElementById('linkUrl').value.trim();
             const title = document.getElementById('linkTitle').value.trim();
             const description = document.getElementById('linkDescription').value.trim();
+            const category = document.getElementById('linkCategory').value;
 
             if (!url || !title) {
                 alert('Por favor, preencha a URL e o título do link!');
@@ -474,12 +477,14 @@
                 title: title,
                 description: description,
                 notes: '',
-                favorite: false
+                favorite: false,
+                category: category 
             });
 
             document.getElementById('linkUrl').value = '';
             document.getElementById('linkTitle').value = '';
             document.getElementById('linkDescription').value = '';
+            document.getElementById('linkCategory').value = 'Sem Categoria';
 
             saveLinks();
             renderLinks();
@@ -492,6 +497,9 @@
         }
 
         function toggleEditTitle(index) {
+            links.forEach((link, i) => {
+                if (i !== index) link.editing = false;
+            });
             links[index].editing = !links[index].editing;
             renderLinks();
         }
@@ -520,6 +528,9 @@
 
         function openMoveModal(index) {
             currentMoveIndex = index;
+            document.getElementById('maxPosition').textContent = links.length;
+            document.getElementById('targetPosition').setAttribute('max', links.length);
+            document.getElementById('targetPosition').value = index + 1;
             document.getElementById('moveModal').classList.add('active');
         }
 
@@ -544,7 +555,27 @@
             closeMoveModal();
         }
 
-        // Inicializar
+        function moveLinkToSpecificPosition() {
+            if (currentMoveIndex === null) return;
+            
+            const targetPositionInput = document.getElementById('targetPosition');
+            let targetPosition = parseInt(targetPositionInput.value); 
+            let targetIndex = targetPosition - 1; 
+            
+            if (isNaN(targetPosition) || targetPosition < 1 || targetPosition > links.length) {
+                alert(`Por favor, insira uma linha válida entre 1 e ${links.length}.`);
+                return;
+            }
+
+            const link = links.splice(currentMoveIndex, 1)[0];
+            links.splice(targetIndex, 0, link);
+
+            saveLinks();
+            renderLinks();
+            closeMoveModal();
+        }
+
+        // Inicializar a aplicação
         renderLinks();
     </script>
 </body>
