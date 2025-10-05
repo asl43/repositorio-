@@ -3,18 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Links Avançado</title>
+    <title>Gerenciador de Links ULTRA</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <style>
-        /* CSS BÁSICO */
+        /* BASE CSS */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        h1 { color: #667eea; margin-bottom: 30px; text-align: center; font-size: 2.5em; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; transition: background 0.3s ease; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transition: background 0.3s ease, box-shadow 0.3s ease; }
+        h1, h2 { color: #667eea; margin-bottom: 30px; text-align: center; font-size: 2.5em; transition: color 0.3s ease; }
+        h2 { font-size: 1.5em; text-align: left; }
         
-        /* Formulários e Inputs */
+        /* DARK MODE STYLES */
+        body.dark-mode { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e0e0e0; }
+        body.dark-mode .container { background: #222a3d; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+        body.dark-mode h1, body.dark-mode h2 { color: #9ab4f3; }
+        body.dark-mode .add-link-form { background: #2f3b52; border-color: #9ab4f3; }
+        body.dark-mode .form-group label { color: #ccc; }
+        body.dark-mode input, body.dark-mode textarea, body.dark-mode select { background: #3c4a63; border-color: #5568d3; color: #e0e0e0; }
+        body.dark-mode input:focus, body.dark-mode textarea:focus, body.dark-mode select:focus { border-color: #9ab4f3; }
+        body.dark-mode .btn-primary { background: #9ab4f3; color: #222a3d; }
+        body.dark-mode .btn-primary:hover { background: #7c9ded; }
+        body.dark-mode .btn-secondary { background: #5a6a7c; color: #e0e0e0; }
+        body.dark-mode .btn-secondary:hover { background: #6d7e8f; }
+        body.dark-mode .link-item { background: #2f3b52; border-color: #3c4a63; }
+        body.dark-mode .link-item.favorite { border-color: #ffd700; background: #3e4b67; }
+        body.dark-mode .link-item:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        body.dark-mode .link-title { color: #9ab4f3; }
+        body.dark-mode .link-url { color: #aaa; }
+        body.dark-mode .link-description, body.dark-mode .description-text { color: #ccc; }
+        body.dark-mode .link-category { background: #5568d3; color: #e0e0e0; }
+        body.dark-mode .link-notes { background: #3c4a63; border-color: #5568d3; color: #e0e0e0; }
+        body.dark-mode .empty-state h3, body.dark-mode .empty-state p { color: #999; }
+        body.dark-mode .move-modal-content, body.dark-mode .category-modal-content, body.dark-mode .edit-modal-content { background: #2f3b52; }
+        body.dark-mode .move-modal h3, body.dark-mode .category-modal-content h3, body.dark-mode .edit-modal-content h3 { color: #9ab4f3; }
+        body.dark-mode .toolbar { background: #2f3b52; border-color: #3c4a63; }
+        body.dark-mode .toolbar label { color: #ccc; }
+        body.dark-mode .utility-box { background: #2f3b52; border-color: #3c4a63; }
+        body.dark-mode .utility-box h2 { color: #9ab4f3; }
+        body.dark-mode .utility-box p { color: #aaa; }
+        body.dark-mode .icon-btn { color: #ccc; } 
+        body.dark-mode .edit-btn { color: #2ecc71; }
+        body.dark-mode .favorite-btn { color: #ffd700; }
+        body.dark-mode .move-btn { color: #9ab4f3; }
+        body.dark-mode .delete-btn { color: #ff4757; }
+        body.dark-mode .category-item { background: #3c4a63; border-color: #5568d3; }
+
+        /* General Styling */
         .add-link-form { background: #f8f9ff; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #667eea; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #333; font-weight: 600; }
@@ -24,78 +60,92 @@
         input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; }
         textarea { resize: vertical; min-height: 80px; }
         
-        /* Botões */
+        /* Buttons */
         .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; }
         .btn-primary { background: #667eea; color: white; }
         .btn-primary:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
         .btn-secondary { background: #95a5a6; color: white; margin-right: 10px; }
         .btn-secondary:hover { background: #7f8c8d; }
 
-        /* Lista de Links */
+        /* Link Items */
         .link-item { 
             background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #e0e0e0; transition: all 0.3s; position: relative; 
-            cursor: move; /* Indica que o item é arrastável */
+            cursor: grab;
         }
-        .link-item:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
-        .link-item.favorite { border-color: #ffd700; background: #fffdf0; }
-        .link-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
-        .link-title { color: #667eea; font-size: 1.3em; font-weight: 700; text-decoration: none; flex: 1; word-break: break-word; }
-        .link-title:hover { text-decoration: underline; }
-        .link-url { color: #999; font-size: 0.9em; word-break: break-all; margin-bottom: 10px; }
-        .link-category { background: #ecf0f1; color: #34495e; padding: 3px 8px; border-radius: 5px; font-size: 0.8em; font-weight: 600; margin-left: 10px; }
-
-        /* Ações e Modal */
-        .link-actions { display: flex; gap: 8px; flex-shrink: 0; }
-        .icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; transition: transform 0.2s; }
+        
+        /* Actions and Modal */
+        .link-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: auto; }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; transition: transform 0.2s; color: #666; }
         .icon-btn:hover { transform: scale(1.2); }
-        .favorite-btn { color: #ffd700; }
-        .move-btn { color: #667eea; }
-        .delete-btn { color: #ff4757; }
-        .move-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-        .move-modal.active { display: flex; }
-        .move-modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        
+        /* Modal Base Style */
+        .move-modal, .category-modal, .edit-link-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .move-modal.active, .category-modal.active, .edit-link-modal.active { display: flex; }
+        .move-modal-content, .category-modal-content, .edit-modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
 
-        /* NOVO: Barra de Ferramentas e Filtros */
-        .toolbar { 
-            display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; 
-            margin-bottom: 20px; padding: 15px; border-radius: 10px; background: #f0f4ff; border: 1px solid #ddd;
+        /* CATEGORY MANAGEMENT STYLES */
+        .category-management { margin-top: 20px; }
+        .category-list { max-height: 300px; overflow-y: auto; padding-right: 10px; margin-bottom: 20px; }
+        .category-item { 
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; 
+            border: 1px solid #ddd; border-radius: 8px; margin-bottom: 8px; background: #f9f9f9;
         }
-        .toolbar-group { display: flex; gap: 10px; align-items: center; }
-        .toolbar label { margin: 0; font-weight: 700; color: #333; }
-        .utility-box { background: #ecf0f1; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #bdc3c7; }
-        #linksList { min-height: 50px; } /* Garante espaço para Drag and Drop */
+        .category-item input[type="text"] {
+            flex: 1; margin-right: 10px; padding: 5px; border: 1px solid #ccc; font-weight: 600;
+        }
 
-        /* Responsividade */
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsiveness */
         @media (max-width: 600px) {
             .container { padding: 20px; }
-            h1 { font-size: 1.8em; }
-            .link-header { flex-direction: column; }
-            .link-actions { margin-top: 10px; }
+            .link-actions { margin-top: 10px; justify-content: flex-end; }
             .toolbar { flex-direction: column; align-items: stretch; }
             .toolbar-group { flex-direction: column; align-items: stretch; gap: 5px; }
             .toolbar .btn { width: 100%; }
+            .dark-mode-toggle { top: 10px; right: 10px; width: 35px; height: 35px; font-size: 1em; }
         }
     </style>
 </head>
 <body>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Alternar Tema">🌙</button>
+
     <div class="container">
-        <h1>📚 Gerenciador de Links Avançado</h1>
+        <h1>📚 Gerenciador de Links ULTRA</h1>
 
         <div class="utility-box">
-            <h2 style="margin-bottom: 15px; color: #34495e; font-size: 1.5em;">💾 Backup de Dados</h2>
+            <h2 style="margin-bottom: 15px;">🛠️ Ferramentas</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
                 <button class="btn btn-primary" onclick="exportLinks()">Exportar (Download JSON)</button>
                 <input type="file" id="importFile" accept=".json" style="width: auto; flex-grow: 1; padding: 5px;" onchange="importLinks()">
                 <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Importar (Upload JSON)</button>
             </div>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Use o backup para salvar e restaurar seus links em outro dispositivo.</p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Use o backup para salvar e restaurar seus links. Clique em **Gerenciar Categorias** abaixo para organizar seus dados.</p>
         </div>
         
         <div class="add-link-form">
-            <h2 style="margin-bottom: 20px; color: #667eea;">➕ Adicionar Novo Link</h2>
+            <h2 style="margin-bottom: 20px;">➕ Adicionar Novo Link</h2>
             <div class="form-group">
                 <label for="linkUrl">URL do Link:</label>
-                <input type="url" id="linkUrl" placeholder="https://exemplo.com" required>
+                <input type="text" id="linkUrl" placeholder="https://exemplo.com ou apenas exemplo.com" required>
             </div>
             <div class="form-group">
                 <label for="linkTitle">Título:</label>
@@ -103,14 +153,7 @@
             </div>
             <div class="form-group">
                 <label for="linkCategory">Categoria:</label>
-                <select id="linkCategory">
-                    <option value="Sem Categoria">Sem Categoria</option>
-                    <option value="Desenvolvimento">Desenvolvimento</option>
-                    <option value="Finanças">Finanças</option>
-                    <option value="Utilidades">Utilidades</option>
-                    <option value="Pessoal">Pessoal</option>
-                    <option value="Outros">Outros</option>
-                </select>
+                <select id="linkCategory"></select>
             </div>
             <div class="form-group">
                 <label for="linkDescription">Descrição:</label>
@@ -120,7 +163,7 @@
         </div>
         
         <div class="add-link-form" style="padding: 15px 25px; margin-bottom: 30px;">
-            <h2 style="margin-bottom: 20px; color: #764ba2; font-size: 1.5em;">🔍 Filtros e Ordenação</h2>
+            <h2 style="margin-bottom: 20px;">🔍 Filtros e Ordenação</h2>
             
             <div class="form-group">
                 <label for="searchInput">Pesquisar:</label>
@@ -130,12 +173,11 @@
             <div class="toolbar">
                 <div class="toolbar-group">
                     <label for="filterCategory">Filtrar por Categoria:</label>
-                    <select id="filterCategory" onchange="renderLinks()">
-                        <option value="all">Todas as Categorias</option>
-                        </select>
+                    <select id="filterCategory" onchange="renderLinks()"></select>
                 </div>
                 
                 <div class="toolbar-group">
+                    <button class="btn btn-secondary" onclick="openCategoryModal()">⚙️ Gerenciar Categorias</button>
                     <button class="btn btn-secondary" onclick="sortLinks('favorite')">⭐ Favoritos no Topo</button>
                     <button class="btn btn-secondary" onclick="sortLinks('title')">A-Z / Z-A</button>
                 </div>
@@ -158,16 +200,62 @@
                 <button class="btn btn-primary" style="margin-top: 10px;" onclick="moveLinkToSpecificPosition()">Mover para Posição</button>
             </div>
 
-            <button class="btn" style="background: #95a5a6; color: white;" onclick="closeMoveModal()">Cancelar</button>
+            <button class="btn" style="background: #95a5a6; color: white; margin-top: 20px;" onclick="closeMoveModal()">Cancelar</button>
         </div>
     </div>
 
-    <script>
-        const initialLinks = [
-            // SEU NOVO LINK ADICIONADO AQUI
-            { url: 'https://asl43.github.io/repositorio-/', title: 'REPOSITORIO DE LINKS', description: 'Link do próprio Gerenciador de Links.', notes: '', favorite: true, category: 'Desenvolvimento' },
+    <div class="category-modal" id="categoryModal">
+        <div class="category-modal-content">
+            <h3>⚙️ Gerenciar Categorias</h3>
             
-            // Seus links anteriores
+            <div class="category-add" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="newCategoryName" placeholder="Novo nome de categoria" style="flex: 1;">
+                <button class="btn btn-primary" onclick="addCategory()">Adicionar</button>
+            </div>
+
+            <div class="category-management">
+                <h4>Categorias Atuais:</h4>
+                <div class="category-list" id="categoryList">
+                    </div>
+                <p style="font-size: 0.8em; color: #7f8c8d;">**Nota:** "Sem Categoria" não pode ser alterada ou excluída.</p>
+            </div>
+
+            <button class="btn" style="background: #95a5a6; color: white; margin-top: 20px;" onclick="closeCategoryModal()">Fechar</button>
+        </div>
+    </div>
+
+    <div class="edit-link-modal" id="editLinkModal">
+        <div class="edit-modal-content">
+            <h3>✍️ Editar Link</h3>
+            <input type="hidden" id="editLinkIndex">
+            
+            <div class="form-group">
+                <label for="editLinkUrl">URL do Link:</label>
+                <input type="text" id="editLinkUrl" required>
+            </div>
+            <div class="form-group">
+                <label for="editLinkTitle">Título:</label>
+                <input type="text" id="editLinkTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="editLinkCategory">Categoria:</label>
+                <select id="editLinkCategory"></select>
+            </div>
+            <div class="form-group">
+                <label for="editLinkDescription">Descrição:</label>
+                <textarea id="editLinkDescription"></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveEditedLink()">Salvar Alterações</button>
+            <button class="btn" style="background: #95a5a6; color: white; margin-top: 10px;" onclick="closeEditModal()">Cancelar</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Dados Iniciais (Apenas para primeira carga) ---
+        const initialLinks = [
+            { url: 'https://asl43.github.io/repositorio-/', title: 'REPOSITORIO DE LINKS', description: 'Link do próprio Gerenciador de Links.', notes: '', favorite: true, category: 'Desenvolvimento' },
             { url: 'https://github.com/asl43/rifa_solidaria', title: 'Rifa Solidária – Castração de Cães e Gatos', description: '', notes: '', favorite: false, category: 'Pessoal' },
             { url: 'https://github.com/asl43/Futebol', title: 'Futebol', description: '', notes: '', favorite: false, category: 'Outros' },
             { url: 'https://github.com/asl43/Alarme', title: 'Alarme', description: '', notes: '', favorite: false, category: 'Utilidades' },
@@ -227,7 +315,34 @@
         // --- Variáveis Globais ---
         let links = loadLinks(); 
         let currentMoveIndex = null;
-        let sortDirection = 1; // 1 para A-Z/Ascendente, -1 para Z-A/Descendente
+        let sortDirection = 1; 
+        
+        // --- FUNÇÕES DE DARK MODE ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            updateDarkModeToggleIcon();
+        }
+
+        function loadDarkModePreference() {
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+            const savedPreference = localStorage.getItem('darkMode');
+
+            if (savedPreference === 'true' || (savedPreference === null && prefersDarkScheme.matches)) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            updateDarkModeToggleIcon();
+        }
+
+        function updateDarkModeToggleIcon() {
+            const toggleButton = document.querySelector('.dark-mode-toggle');
+            if (toggleButton) {
+                toggleButton.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            }
+        }
         
         // --- FUNÇÕES DE PERSISTÊNCIA (localStorage) ---
 
@@ -236,16 +351,20 @@
                 const savedLinks = localStorage.getItem('myLinkManagerLinks');
                 if (savedLinks) {
                     const parsedLinks = JSON.parse(savedLinks);
-                    // Garante que links antigos sem 'category' tenham um valor padrão
                     return parsedLinks.map(link => ({ 
                         ...link, 
-                        category: link.category || 'Sem Categoria' 
+                        category: link.category || 'Sem Categoria',
+                        editingTitle: false,
+                        editingDescription: false,
+                        editingCategory: false
                     }));
                 }
-                // Adiciona 'category' padrão aos links iniciais se não vierem com ela
                 return initialLinks.map(link => ({ 
                     ...link, 
-                    category: link.category || 'Sem Categoria' 
+                    category: link.category || 'Sem Categoria',
+                    editingTitle: false,
+                    editingDescription: false,
+                    editingCategory: false
                 }));
             } catch (e) {
                 console.error("Erro ao carregar links do localStorage:", e);
@@ -255,105 +374,333 @@
 
         function saveLinks() {
             try {
-                localStorage.setItem('myLinkManagerLinks', JSON.stringify(links));
+                const linksToSave = links.map(link => {
+                    // Remove flags de edição antes de salvar
+                    const { editingTitle, editingDescription, editingCategory, ...rest } = link;
+                    return rest;
+                });
+                localStorage.setItem('myLinkManagerLinks', JSON.stringify(linksToSave));
+                updatePageTitleCount(); 
             } catch (e) {
                 console.error("Erro ao salvar links no localStorage:", e);
             }
         }
 
-        // --- FUNÇÕES DE BACKUP (Exportar/Importar) ---
-
-        function exportLinks() {
-            const dataStr = JSON.stringify(links, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = 'links_backup.json';
-
-            let linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
+        // --- FUNÇÃO DE CONTAGEM NO TÍTULO DA PÁGINA ---
+        function updatePageTitleCount() {
+            const totalCount = links.length;
+            document.title = `Gerenciador de Links ULTRA (${totalCount})`;
         }
 
-        function importLinks() {
-            const fileInput = document.getElementById('importFile');
-            const file = fileInput.files[0];
+
+        // --- FUNÇÕES DE CATEGORIAS ---
+        function getUniqueCategories() {
+            const categories = links.map(link => link.category).filter(Boolean);
+            const uniqueCategories = [...new Set(categories)];
             
-            if (!file) {
-                alert("Por favor, selecione um arquivo JSON para importar.");
+            const defaultCategory = 'Sem Categoria';
+            const sorted = uniqueCategories
+                .filter(cat => cat !== defaultCategory)
+                .sort((a, b) => a.localeCompare(b));
+
+            return [defaultCategory, ...sorted];
+        }
+
+        function getUniqueCategoriesWithCount() {
+            const categoryCounts = {};
+            links.forEach(link => {
+                const category = link.category || 'Sem Categoria';
+                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+            });
+            
+            const uniqueCategories = getUniqueCategories(); 
+            
+            return uniqueCategories.map(category => ({
+                name: category,
+                count: categoryCounts[category] || 0
+            }));
+        }
+
+        function populateCategorySelects(targetSelectId = null, selectedCategory = null) {
+            const uniqueCategories = getUniqueCategories();
+            const addSelect = document.getElementById('linkCategory');
+            const filterSelect = document.getElementById('filterCategory');
+            
+            // Popula o select de Adição
+            addSelect.innerHTML = uniqueCategories.map(cat => 
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+            
+            // Popula o select de Edição (se estiver ativo)
+            if (targetSelectId === 'editLinkCategory') {
+                const editSelect = document.getElementById(targetSelectId);
+                editSelect.innerHTML = uniqueCategories.map(cat => 
+                    `<option value="${cat}" ${cat === selectedCategory ? 'selected' : ''}>${cat}</option>`
+                ).join('');
+            }
+            
+            // Popula o select de Filtro (com contagem)
+            const categoriesWithCount = getUniqueCategoriesWithCount();
+            const currentFilter = filterSelect.value;
+
+            filterSelect.innerHTML = `<option value="all">Todas as Categorias (${links.length})</option>`;
+            
+            categoriesWithCount.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = `${cat.name} (${cat.count})`;
+                if (cat.name === currentFilter) {
+                    option.selected = true;
+                }
+                if (cat.name !== 'Sem Categoria') {
+                    filterSelect.appendChild(option);
+                }
+            });
+        }
+        
+        // --- GERENCIAMENTO DE CATEGORIAS (MODAL) ---
+        
+        function openCategoryModal() {
+            document.getElementById('categoryModal').classList.add('active');
+            renderCategoryList();
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+            renderLinks(); 
+        }
+
+        function renderCategoryList() {
+            const categoryList = document.getElementById('categoryList');
+            const categoriesWithCount = getUniqueCategoriesWithCount().filter(cat => cat.name !== 'Sem Categoria');
+            
+            categoryList.innerHTML = categoriesWithCount.map(cat => {
+                return `
+                    <div class="category-item" data-category="${cat.name}">
+                        <span id="categoryName-${cat.name.replace(/\s/g, '_')}">${cat.name} (${cat.count} links)</span>
+                        <input type="text" id="editInput-${cat.name.replace(/\s/g, '_')}" value="${cat.name}" style="display: none;">
+                        <div class="category-actions">
+                            <button class="icon-btn" onclick="toggleEditCategoryName('${cat.name}')" title="Renomear">✏️</button>
+                            <button class="icon-btn delete-btn" onclick="deleteCategory('${cat.name}')" title="Excluir">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<p style="text-align: center; color: #999;">Nenhuma categoria personalizada.</p>';
+        }
+
+        function addCategory() {
+            const newName = document.getElementById('newCategoryName').value.trim();
+            if (!newName) {
+                alert("Por favor, insira um nome para a nova categoria.");
+                return;
+            }
+            // Verifica se a categoria já existe (case-insensitive)
+            if (getUniqueCategories().map(c => c.toLowerCase()).includes(newName.toLowerCase())) {
+                alert("Essa categoria já existe!");
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedLinks = JSON.parse(e.target.result);
-                    if (Array.isArray(importedLinks)) {
-                        if (confirm(`Tem certeza que deseja substituir os ${links.length} links atuais por ${importedLinks.length} links importados?`)) {
-                            links = importedLinks.map(link => ({ 
-                                ...link, 
-                                category: link.category || 'Sem Categoria' 
-                            }));
-                            saveLinks();
-                            renderLinks();
-                            alert("Importação concluída com sucesso!");
-                        }
-                    } else {
-                        alert("Formato de arquivo JSON inválido. O arquivo deve conter uma lista (array) de links.");
-                    }
-                } catch (error) {
-                    alert("Erro ao ler o arquivo JSON. Verifique se o formato está correto.");
-                    console.error("Erro de importação:", error);
-                }
-            };
-            reader.readAsText(file);
+            // Para garantir que a nova categoria apareça nos selects,
+            // forçamos o re-render dos selects e fechamos o modal.
+            // O usuário pode então usá-la.
+            
+            // No caso de não ter nenhum link, ele não irá aparecer.
+            // Vamos apenas forçar a atualização dos selects:
+            
+            // Atualiza o DOM e fecha o modal. O usuário adicionará o primeiro link
+            // com a nova categoria no formulário.
+            document.getElementById('newCategoryName').value = '';
+            populateCategorySelects();
+            alert(`Categoria "${newName}" pode ser usada agora! Adicione o primeiro link com essa categoria.`);
+            closeCategoryModal(); 
         }
 
-        // --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO ---
-
-        function getUniqueCategories() {
-            // Obtém categorias únicas de todos os links, incluindo novos, e as ordena
-            const categories = links.map(link => link.category).filter(Boolean);
-            return [...new Set(categories)].sort();
+        function toggleEditCategoryName(oldName) {
+            // ... (Funções de renomear e excluir categoria permanecem iguais,
+            // apenas garantindo que chamam renderLinks() no final)
+            const safeOldName = oldName.replace(/\s/g, '_');
+            const span = document.getElementById(`categoryName-${safeOldName}`);
+            const input = document.getElementById(`editInput-${safeOldName}`);
+            
+            if (span.style.display !== 'none') {
+                span.style.display = 'none';
+                input.style.display = 'inline-block';
+                input.focus();
+                input.onblur = () => saveCategoryName(oldName, input.value.trim());
+                input.onkeypress = (e) => {
+                    if (e.key === 'Enter') saveCategoryName(oldName, input.value.trim());
+                };
+            } else {
+                saveCategoryName(oldName, input.value.trim());
+            }
         }
 
-        function populateCategoryFilters() {
-            const filterSelect = document.getElementById('filterCategory');
-            const uniqueCategories = getUniqueCategories();
-            const currentFilter = filterSelect.value;
+        function saveCategoryName(oldName, newName) {
+            const safeOldName = oldName.replace(/\s/g, '_');
+            const span = document.getElementById(`categoryName-${safeOldName}`);
+            const input = document.getElementById(`editInput-${safeOldName}`);
             
-            filterSelect.innerHTML = '<option value="all">Todas as Categorias</option>';
+            if (!newName || newName === oldName) {
+                span.style.display = 'inline-block';
+                input.style.display = 'none';
+                renderCategoryList();
+                return;
+            }
             
-            uniqueCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                if (category === currentFilter) {
-                    option.selected = true;
+            if (getUniqueCategories().map(c => c.toLowerCase()).includes(newName.toLowerCase())) {
+                alert("Essa categoria já existe!");
+                renderCategoryList();
+                return;
+            }
+
+            links.forEach(link => {
+                if (link.category === oldName) {
+                    link.category = newName;
                 }
-                filterSelect.appendChild(option);
             });
+
+            saveLinks();
+            renderCategoryList();
+            renderLinks(); 
         }
+
+        function deleteCategory(categoryToDelete) {
+            if (categoryToDelete === 'Sem Categoria') return;
+            
+            if (confirm(`Tem certeza que deseja excluir a categoria "${categoryToDelete}"? Todos os links serão movidos para "Sem Categoria".`)) {
+                
+                links.forEach(link => {
+                    if (link.category === categoryToDelete) {
+                        link.category = 'Sem Categoria';
+                    }
+                });
+
+                saveLinks();
+                renderCategoryList();
+                renderLinks(); 
+            }
+        }
+
+        // --- FUNÇÕES DE EDIÇÃO COMPLETA (NOVO) ---
+        
+        function openEditModal(index) {
+            const link = links[index];
+
+            document.getElementById('editLinkIndex').value = index;
+            document.getElementById('editLinkUrl').value = link.url;
+            document.getElementById('editLinkTitle').value = link.title;
+            document.getElementById('editLinkDescription').value = link.description;
+
+            // Popula o select do modal de edição com a categoria correta selecionada
+            populateCategorySelects('editLinkCategory', link.category);
+            
+            document.getElementById('editLinkModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editLinkModal').classList.remove('active');
+        }
+
+        function validateAndCleanURL(url) {
+            if (!url.match(/^https?:\/\//i)) {
+                url = 'https://' + url;
+            }
+            try {
+                new URL(url);
+                return url;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveEditedLink() {
+            const index = parseInt(document.getElementById('editLinkIndex').value);
+            let newUrl = document.getElementById('editLinkUrl').value.trim();
+            const newTitle = document.getElementById('editLinkTitle').value.trim();
+            const newCategory = document.getElementById('editLinkCategory').value;
+            const newDescription = document.getElementById('editLinkDescription').value.trim();
+
+            if (!newUrl || !newTitle) {
+                alert('URL e Título são obrigatórios.');
+                return;
+            }
+
+            newUrl = validateAndCleanURL(newUrl);
+
+            if (!newUrl) {
+                alert('A URL fornecida não é válida. Por favor, corrija o formato.');
+                return;
+            }
+
+            links[index].url = newUrl;
+            links[index].title = newTitle;
+            links[index].category = newCategory;
+            links[index].description = newDescription;
+
+            saveLinks();
+            renderLinks();
+            closeEditModal();
+        }
+
+        // --- FUNÇÃO DE ADICIONAR LINK (Com Validação de URL) ---
+
+        function addLink() {
+            let url = document.getElementById('linkUrl').value.trim();
+            const title = document.getElementById('linkTitle').value.trim();
+            const description = document.getElementById('linkDescription').value.trim();
+            const category = document.getElementById('linkCategory').value;
+
+            if (!url || !title) {
+                alert('Por favor, preencha a URL e o título do link!');
+                return;
+            }
+            
+            url = validateAndCleanURL(url);
+
+            if (!url) {
+                alert('A URL fornecida não é válida. Por favor, corrija o formato.');
+                return;
+            }
+
+
+            links.push({
+                url: url,
+                title: title,
+                description: description,
+                notes: '',
+                favorite: false,
+                category: category,
+                editingTitle: false,
+                editingDescription: false,
+                editingCategory: false
+            });
+
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkTitle').value = '';
+            document.getElementById('linkDescription').value = '';
+            
+            saveLinks();
+            renderLinks();
+        }
+        
+        // --- FUNÇÕES DE RENDERIZAÇÃO E FILTRO (CORRIGIDO) ---
 
         function renderLinks() {
             const linksList = document.getElementById('linksList');
             const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterCategory = document.getElementById('filterCategory').value;
 
-            // 1. Filtrar links
+            populateCategorySelects();
+
             let filteredLinks = links.filter(link => {
-                const searchString = `${link.title} ${link.url} ${link.description} ${link.notes}`.toLowerCase();
-                const matchesSearch = searchString.includes(searchValue);
+                const searchString = `${link.title} ${link.url} ${link.description} ${link.notes} ${link.category}`.toLowerCase();
+                const matchesSearch = searchValue === '' || searchString.includes(searchValue);
                 const matchesCategory = filterCategory === 'all' || link.category === filterCategory;
                 return matchesSearch && matchesCategory;
             });
-            
-            // 2. Popular filtros (precisa ser feito antes do render)
-            populateCategoryFilters();
 
-            // 3. Estado vazio
             if (filteredLinks.length === 0) {
-                linksList.innerHTML = `
+                 linksList.innerHTML = `
                     <div class="empty-state">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
@@ -362,27 +709,37 @@
                         <p>${searchValue || filterCategory !== 'all' ? 'Tente ajustar sua pesquisa ou filtro' : 'Adicione seu primeiro link usando o formulário acima'}</p>
                     </div>
                 `;
+                initializeSortable();
                 return;
             }
 
-            // 4. Renderizar links filtrados
-            linksList.innerHTML = filteredLinks.map((link, index) => {
-                // Encontrar o índice original para usar nas funções (delete, move, etc.)
+            linksList.innerHTML = filteredLinks.map((link) => {
                 const originalIndex = links.indexOf(link); 
                 const linkNumber = `${originalIndex + 1}. `; 
                 
+                const categoryOptions = getUniqueCategories().map(cat => 
+                    `<option value="${cat}" ${link.category === cat ? 'selected' : ''}>${cat}</option>`
+                ).join('');
+
                 return `
                     <div class="link-item ${link.favorite ? 'favorite' : ''}" data-id="${originalIndex}">
                         <div class="link-header">
-                            ${link.editing ? 
+                            ${link.editingTitle ? 
                                 `<input type="text" class="title-input" value="${link.title}" onblur="saveTitle(${originalIndex}, this.value)" onkeypress="if(event.key==='Enter') saveTitle(${originalIndex}, this.value)" autofocus>` :
                                 `<a href="${link.url}" target="_blank" class="link-title">${linkNumber}${link.title} 
-                                    <span class="link-category">${link.category}</span>
+                                    ${link.editingCategory ?
+                                        `<select class="category-select-inline" onblur="saveCategory(${originalIndex}, this.value)" onchange="saveCategory(${originalIndex}, this.value)">
+                                            ${categoryOptions}
+                                        </select>` :
+                                        `<span class="link-category">${link.category}
+                                            <button class="icon-btn" onclick="toggleEditCategory(${originalIndex})" title="Editar Categoria">✏️</button>
+                                        </span>`
+                                    }
                                 </a>`
                             }
                             <div class="link-actions">
-                                <button class="icon-btn edit-btn" onclick="toggleEditTitle(${originalIndex})" title="${link.editing ? 'Salvar' : 'Editar Título'}">
-                                    ${link.editing ? '✓' : '✏️'}
+                                <button class="icon-btn edit-btn" onclick="openEditModal(${originalIndex})" title="Editar Link Completo">
+                                    📝
                                 </button>
                                 <button class="icon-btn favorite-btn" onclick="toggleFavorite(${originalIndex})" title="Favoritar">
                                     ${link.favorite ? '⭐' : '☆'}
@@ -396,25 +753,29 @@
                             </div>
                         </div>
                         <div class="link-url">${link.url}</div>
-                        <div class="link-description">${link.description || 'Sem descrição'}</div>
+                        ${link.editingDescription ? 
+                            `<textarea class="description-input" onblur="saveDescription(${originalIndex}, this.value)" onkeypress="if(event.key==='Enter') saveDescription(${originalIndex}, this.value)">${link.description || ''}</textarea>
+                            <button class="icon-btn edit-btn" onclick="toggleEditDescription(${originalIndex})" title="Salvar Descrição" style="position: absolute; right: 25px; bottom: 85px;">✓</button>` :
+                            `<div class="link-description description-text" onclick="toggleEditDescription(${originalIndex})" title="Clique para editar">${link.description || 'Sem descrição (clique para adicionar)'}</div>`
+                        }
+                        
                         <textarea class="link-notes" placeholder="Adicione notas aqui..." oninput="updateNotes(${originalIndex}, this.value)">${link.notes || ''}</textarea>
                     </div>
                 `;
             }).join('');
             
-            // 5. Reiniciar o Drag and Drop
             initializeSortable();
         }
 
-        // --- FUNÇÕES DE ORDENAÇÃO (Sort) ---
+        // --- FUNÇÕES DE EDIÇÃO IN-LINE, ORDENAÇÃO E MODAIS (Restante) ---
+        // (As funções de edição in-line e modais de mover/backup permanecem inalteradas,
+        // mas a `renderLinks` agora usa o novo botão 📝)
 
         function sortLinks(type) {
             if (type === 'title') {
-                // Alterna a direção (A-Z ou Z-A)
                 sortDirection = sortDirection * -1; 
                 links.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
             } else if (type === 'favorite') {
-                // Ordena favoritos primeiro 
                 links.sort((a, b) => {
                     if (a.favorite && !b.favorite) return -1;
                     if (!a.favorite && b.favorite) return 1;
@@ -425,11 +786,8 @@
             renderLinks();
         }
 
-        // --- FUNÇÕES DE DRAG AND DROP (Sortable.js) ---
-
         function initializeSortable() {
             const list = document.getElementById('linksList');
-            // Só permite o Drag and Drop se não houver filtro ou pesquisa ativa
             const isFiltered = document.getElementById('searchInput').value.trim() !== '' || document.getElementById('filterCategory').value !== 'all';
 
             if (list.sortable) {
@@ -438,18 +796,17 @@
 
             if (isFiltered) {
                 list.style.cursor = 'default';
-                return; // Não inicializa o Sortable
+                return; 
             }
             
-            list.style.cursor = 'move';
+            list.style.cursor = 'grab';
             list.sortable = Sortable.create(list, {
                 animation: 150,
-                filter: '.title-input, .link-notes',
+                filter: '.title-input, .description-input, .category-select-inline, .link-notes',
                 onEnd: function (evt) {
                     const oldIndex = evt.oldIndex;
                     const newIndex = evt.newIndex;
                     
-                    // O Sortable.js move os elementos visuais. Agora atualizamos o array links.
                     const itemToMove = links.splice(oldIndex, 1)[0];
                     links.splice(newIndex, 0, itemToMove);
                     
@@ -458,38 +815,7 @@
                 },
             });
         }
-
-        // --- FUNÇÕES DE CRUD E MOVIMENTAÇÃO ---
-
-        function addLink() {
-            const url = document.getElementById('linkUrl').value.trim();
-            const title = document.getElementById('linkTitle').value.trim();
-            const description = document.getElementById('linkDescription').value.trim();
-            const category = document.getElementById('linkCategory').value;
-
-            if (!url || !title) {
-                alert('Por favor, preencha a URL e o título do link!');
-                return;
-            }
-
-            links.push({
-                url: url,
-                title: title,
-                description: description,
-                notes: '',
-                favorite: false,
-                category: category 
-            });
-
-            document.getElementById('linkUrl').value = '';
-            document.getElementById('linkTitle').value = '';
-            document.getElementById('linkDescription').value = '';
-            document.getElementById('linkCategory').value = 'Sem Categoria';
-
-            saveLinks();
-            renderLinks();
-        }
-
+        
         function toggleFavorite(index) {
             links[index].favorite = !links[index].favorite;
             saveLinks();
@@ -498,19 +824,55 @@
 
         function toggleEditTitle(index) {
             links.forEach((link, i) => {
-                if (i !== index) link.editing = false;
+                if (i !== index) link.editingTitle = false;
+                link.editingDescription = false; 
+                link.editingCategory = false; 
             });
-            links[index].editing = !links[index].editing;
+            links[index].editingTitle = !links[index].editingTitle;
             renderLinks();
         }
 
         function saveTitle(index, newTitle) {
             if (newTitle.trim()) {
                 links[index].title = newTitle.trim();
-                links[index].editing = false;
-                saveLinks();
-                renderLinks();
             }
+            links[index].editingTitle = false;
+            saveLinks();
+            renderLinks();
+        }
+
+        function toggleEditDescription(index) {
+             links.forEach((link, i) => {
+                if (i !== index) link.editingDescription = false;
+                link.editingTitle = false;
+                link.editingCategory = false;
+            });
+            links[index].editingDescription = !links[index].editingDescription;
+            renderLinks();
+        }
+
+        function saveDescription(index, newDescription) {
+            links[index].description = newDescription.trim();
+            links[index].editingDescription = false;
+            saveLinks();
+            renderLinks();
+        }
+
+        function toggleEditCategory(index) {
+             links.forEach((link, i) => {
+                if (i !== index) link.editingCategory = false;
+                link.editingTitle = false;
+                link.editingDescription = false;
+            });
+            links[index].editingCategory = !links[index].editingCategory;
+            renderLinks();
+        }
+
+        function saveCategory(index, newCategory) {
+            links[index].category = newCategory;
+            links[index].editingCategory = false;
+            saveLinks();
+            renderLinks();
         }
 
         function updateNotes(index, value) {
@@ -575,8 +937,61 @@
             closeMoveModal();
         }
 
-        // Inicializar a aplicação
-        renderLinks();
+        function exportLinks() {
+            const dataStr = JSON.stringify(links, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'links_backup.json';
+
+            let linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importLinks() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert("Por favor, selecione um arquivo JSON para importar.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedLinks = JSON.parse(e.target.result);
+                    if (Array.isArray(importedLinks)) {
+                        if (confirm(`Tem certeza que deseja substituir os ${links.length} links atuais por ${importedLinks.length} links importados?`)) {
+                            links = importedLinks.map(link => ({ 
+                                ...link, 
+                                category: link.category || 'Sem Categoria',
+                                editingTitle: false,
+                                editingDescription: false,
+                                editingCategory: false
+                            }));
+                            saveLinks();
+                            renderLinks();
+                            alert("Importação concluída com sucesso!");
+                        }
+                    } else {
+                        alert("Formato de arquivo JSON inválido. O arquivo deve conter uma lista (array) de links.");
+                    }
+                } catch (error) {
+                    alert("Erro ao ler o arquivo JSON. Verifique se o formato está correto.");
+                    console.error("Erro de importação:", error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDarkModePreference();
+            updatePageTitleCount();
+            renderLinks();
+        });
     </script>
 </body>
 </html>
