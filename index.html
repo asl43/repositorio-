@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        .add-link-form {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .link-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .link-item:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .link-item.favorite {
+            border-color: #ffd700;
+            background: #fffdf0;
+        }
+
+        .link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .link-title {
+            color: #667eea;
+            font-size: 1.3em;
+            font-weight: 700;
+            text-decoration: none;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .link-title:hover {
+            text-decoration: underline;
+        }
+
+        .title-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+            background: white;
+            margin-bottom: 10px;
+        }
+
+        .title-input:focus {
+            outline: none;
+            border-color: #5568d3;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .edit-btn {
+            color: #2ecc71;
+        }
+
+        .link-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .favorite-btn {
+            color: #ffd700;
+        }
+
+        .move-btn {
+            color: #667eea;
+        }
+
+        .delete-btn {
+            color: #ff4757;
+        }
+
+        .link-description {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .link-notes {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #f9f9f9;
+        }
+
+        .link-url {
+            color: #999;
+            font-size: 0.9em;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .move-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .move-modal.active {
+            display: flex;
+        }
+
+        .move-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .move-modal h3 {
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .move-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .move-options button {
+            width: 100%;
+        }
+
+        .position-input-group {
+            margin-bottom: 20px;
+        }
+
+        .position-input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .position-input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .position-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .link-header {
+                flex-direction: column;
+            }
+
+            .link-actions {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Gerenciador de Links</h1>
+
+        <div class="add-link-form">
+            <h2 style="margin-bottom: 20px; color: #667eea;">➕ Adicionar Novo Link</h2>
+            <div class="form-group">
+                <label for="linkUrl">URL do Link:</label>
+                <input type="url" id="linkUrl" placeholder="https://exemplo.com" required>
+            </div>
+            <div class="form-group">
+                <label for="linkTitle">Título:</label>
+                <input type="text" id="linkTitle" placeholder="Título do link" required>
+            </div>
+            <div class="form-group">
+                <label for="linkDescription">Descrição:</label>
+                <textarea id="linkDescription" placeholder="Descrição do link"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="addLink()">Adicionar Link</button>
+        </div>
+
+        <div id="linksList"></div>
+    </div>
+
+    <div class="move-modal" id="moveModal">
+        <div class="move-modal-content">
+            <h3>Mover Link</h3>
+            <div class="move-options">
+                <button class="btn btn-primary" onclick="moveToPosition('first')">⬆️ Mover para Primeira</button>
+                <button class="btn btn-primary" onclick="moveToPosition('last')">⬇️ Mover para Última</button>
+                <button class="btn" style="background: #95a5a6; color: white;" onclick="closeMoveModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let links = [
+            { url: 'https://github.com/asl43/rifa_solidaria', title: 'Rifa Solidária – Castração de Cães e Gatos', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Futebol', title: 'Futebol', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Alarme', title: 'Alarme', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Sv_diario', title: 'SV Diário', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Registro_SV', title: 'Registro SV', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Link_utilidades', title: 'Link Utilidades', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Futebol1', title: 'Futebol 1', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/SV_relatorio', title: 'SV Relatório', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Conversortextoavancado', title: 'Conversor Texto Avançado', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/SistemacontroleVTR', title: 'Sistema Controle VTR', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Monitor-investimento-', title: 'Monitor Investimento', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Gerenciador-arquivo-', title: 'Gerenciador Arquivo', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/System-de-estudos-', title: 'System de Estudos', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/rifa_beneficente', title: 'Rifa Beneficente', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Bin', title: 'Bin', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Audio', title: 'Audio', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Bing', title: 'Bing', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Encurto', title: 'Encurtador', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Sudoku', title: 'Sudoku', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Gest', title: 'Gest', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Gest-or', title: 'Gestor', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Click', title: 'Click', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Energia-consumo', title: 'Energia Consumo', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Gest-sv', title: 'Gest SV', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/aguaia', title: 'Aguaia', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Financy', title: 'Financy', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Pet', title: 'Pet', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Gps', title: 'GPS', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/CONVERTMP3', title: 'Converter MP3', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Creacao-vd', title: 'Criação VD', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Anota-es', title: 'Anotações', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Calend-rio-e-LEMBRETES-', title: 'Calendário e Lembretes', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/mp43', title: 'MP4', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Edi-o-foto', title: 'Edição Foto', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Recicl', title: 'Reciclagem', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Compara', title: 'Comparador', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Autoagendar', title: 'Auto Agendar', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Imgdesenh', title: 'Img Desenho', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/BLOCO', title: 'Bloco', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/ANALIZADOR', title: 'Analisador', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Analy-tel', title: 'Analy Tel', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Chtbot', title: 'Chatbot', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Chat-pwa', title: 'Chat PWA', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Botcht', title: 'Bot Chat', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Integracbot', title: 'Integração Bot', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/gest-sv2', title: 'Gest SV 2', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/gest-sv3', title: 'Gest SV 3', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/gest-sv4', title: 'Gest SV 4', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/contrutor-de-chatbot-', title: 'Construtor de Chatbot', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Chat_Interno', title: 'Chat Interno', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/SMART-AGENDA', title: 'Smart Agenda', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/SMART-AGENDA-SIMILAR', title: 'Smart Agenda Similar', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/Agend', title: 'Agenda', description: '', notes: '', favorite: false },
+            { url: 'https://github.com/asl43/empenho-de-J', title: 'Empenho de J', description: '', notes: '', favorite: false }
+        ];
+        let currentMoveIndex = null;
+
+        function saveLinks() {
+            // Dados salvos apenas na memória durante a sessão
+        }
+
+        function renderLinks() {
+            const linksList = document.getElementById('linksList');
+            
+            if (links.length === 0) {
+                linksList.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                        </svg>
+                        <h3>Nenhum link salvo ainda</h3>
+                        <p>Adicione seu primeiro link usando o formulário acima</p>
+                    </div>
+                `;
+                return;
+            }
+
+            linksList.innerHTML = links.map((link, index) => {
+                const linkNumber = `${index + 1}. `; 
+                
+                return `
+                    <div class="link-item ${link.favorite ? 'favorite' : ''}">
+                        <div class="link-header">
+                            ${link.editing ? 
+                                `<input type="text" class="title-input" value="${link.title}" onblur="saveTitle(${index}, this.value)" onkeypress="if(event.key==='Enter') saveTitle(${index}, this.value)" autofocus>` :
+                                `<a href="${link.url}" target="_blank" class="link-title">${linkNumber}${link.title}</a>`
+                            }
+                            <div class="link-actions">
+                                <button class="icon-btn edit-btn" onclick="toggleEditTitle(${index})" title="${link.editing ? 'Salvar' : 'Editar Título'}">
+                                    ${link.editing ? '✓' : '✏️'}
+                                </button>
+                                <button class="icon-btn favorite-btn" onclick="toggleFavorite(${index})" title="Favoritar">
+                                    ${link.favorite ? '⭐' : '☆'}
+                                </button>
+                                <button class="icon-btn move-btn" onclick="openMoveModal(${index})" title="Mover">
+                                    ↕️
+                                </button>
+                                <button class="icon-btn delete-btn" onclick="deleteLink(${index})" title="Excluir">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="link-url">${link.url}</div>
+                        <div class="link-description">${link.description || 'Sem descrição'}</div>
+                        <textarea class="link-notes" placeholder="Adicione notas aqui..." oninput="updateNotes(${index}, this.value)">${link.notes || ''}</textarea>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addLink() {
+            const url = document.getElementById('linkUrl').value.trim();
+            const title = document.getElementById('linkTitle').value.trim();
+            const description = document.getElementById('linkDescription').value.trim();
+
+            if (!url || !title) {
+                alert('Por favor, preencha a URL e o título do link!');
+                return;
+            }
+
+            links.push({
+                url: url,
+                title: title,
+                description: description,
+                notes: '',
+                favorite: false
+            });
+
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkTitle').value = '';
+            document.getElementById('linkDescription').value = '';
+
+            saveLinks();
+            renderLinks();
+        }
+
+        function toggleFavorite(index) {
+            links[index].favorite = !links[index].favorite;
+            saveLinks();
+            renderLinks();
+        }
+
+        function toggleEditTitle(index) {
+            links[index].editing = !links[index].editing;
+            renderLinks();
+        }
+
+        function saveTitle(index, newTitle) {
+            if (newTitle.trim()) {
+                links[index].title = newTitle.trim();
+                links[index].editing = false;
+                saveLinks();
+                renderLinks();
+            }
+        }
+
+        function updateNotes(index, value) {
+            links[index].notes = value;
+            saveLinks();
+        }
+
+        function deleteLink(index) {
+            if (confirm('Tem certeza que deseja excluir este link?')) {
+                links.splice(index, 1);
+                saveLinks();
+                renderLinks();
+            }
+        }
+
+        function openMoveModal(index) {
+            currentMoveIndex = index;
+            document.getElementById('moveModal').classList.add('active');
+        }
+
+        function closeMoveModal() {
+            document.getElementById('moveModal').classList.remove('active');
+            currentMoveIndex = null;
+        }
+
+        function moveToPosition(position) {
+            if (currentMoveIndex === null) return;
+
+            const link = links.splice(currentMoveIndex, 1)[0];
+            
+            if (position === 'first') {
+                links.unshift(link);
+            } else if (position === 'last') {
+                links.push(link);
+            }
+
+            saveLinks();
+            renderLinks();
+            closeMoveModal();
+        }
+
+        // Inicializar
+        renderLinks();
+    </script>
+</body>
+</html>
